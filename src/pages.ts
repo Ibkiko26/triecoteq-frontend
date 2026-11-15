@@ -121,31 +121,53 @@ function projectCard(project: PortfolioProject, index: number): string {
 
 function homePage(): string {
   const featured = portfolioProjects.slice(0, 3).map(projectCard).join("");
+  const slides = [
+    { image: "Mod1", title: "Residential architecture", description: "Contemporary residence with a landscaped garden and swimming pool", position: "center 58%" },
+    { image: "Mod9", title: "Spaces to gather", description: "Warm family lounge opening onto a garden terrace", position: "center" },
+    { image: "Mod8", title: "Room to retreat", description: "Bedroom suite with timber finishes and views into the garden", position: "center" },
+    { image: "Mod7", title: "Details that make a difference", description: "Marble bathroom with a freestanding bath and softly illuminated mirrors", position: "center" },
+    { image: "Mod2", title: "Connected living", description: "Double-height living space with a floating staircase and pool views", position: "center" }
+  ];
 
   return `
     <main id="main-content">
-      <section class="home-hero">
-        <div class="container home-hero-grid">
+      <section class="home-hero" aria-label="Tri-EcoTeq Architects showcase" aria-roledescription="carousel" data-hero-carousel>
+        <div class="hero-backdrop" aria-hidden="true">
+          ${slides.map((slide, index) => `
+            <div class="hero-slide${index === 0 ? " is-active is-zooming" : ""}" data-hero-slide data-title="${slide.title}">
+              <img src="/assets/hero/${slide.image}.jpg" alt="${slide.description}" style="object-position: ${slide.position}" fetchpriority="${index === 0 ? "high" : "low"}" decoding="async" />
+            </div>
+          `).join("")}
+        </div>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="container home-hero-content">
           <div class="hero-copy">
-            <p class="eyebrow"><span class="eyebrow-line"></span> Independent architecture practice · Nairobi</p>
+            <p class="eyebrow"><span class="eyebrow-line"></span> Tri-EcoTeq Architects · Nairobi</p>
             <h1>Room to live.<br /><em>Space to become.</em></h1>
             <p class="hero-description">We shape homes and places with a clear point of view: beautiful, practical, and made for the lives unfolding inside them.</p>
             <div class="button-row">
-              <a class="button button-dark" href="portfolio.html">Explore our work ${icon("arrow")}</a>
+              <a class="button button-light" href="portfolio.html">Explore our work ${icon("arrow")}</a>
               <a class="text-link" href="contact.html">Tell us what you’re planning <span aria-hidden="true">↗</span></a>
             </div>
             <div class="hero-footnote"><span class="status-dot"></span> Design-led. Detail-minded. Built around you.</div>
           </div>
-          <figure class="hero-figure">
-            <img src="/assets/hero/Proj%201.jpg" alt="Contemporary residential architecture by Tri-EcoTeq Architects" fetchpriority="high" />
-            <figcaption><span>01 / 03</span><span>Residential study · Nairobi</span></figcaption>
-            <span class="hero-stamp">Design<br />with purpose</span>
-          </figure>
         </div>
-        <div class="hero-side-note" aria-hidden="true">TRI-ECOTEQ · ARCHITECTURE · INTERIORS</div>
+        <div class="container hero-bottom-bar">
+          <a class="hero-scroll-link" href="#home-introduction">Scroll to explore <span aria-hidden="true">↓</span></a>
+          <div class="hero-slide-caption"><span class="hero-slide-number" data-hero-number>01 / 05</span><span data-hero-caption>${slides[0].title}</span></div>
+          <div class="hero-slideshow-controls" role="group" aria-label="Slideshow controls">
+            <div class="hero-slide-selectors" role="group" aria-label="Choose an image">
+              ${slides.map((slide, index) => `<button class="hero-slide-selector${index === 0 ? " is-active" : ""}" type="button" data-hero-select="${index}" aria-label="Show image ${index + 1}: ${slide.title}" aria-pressed="${index === 0}"><span></span></button>`).join("")}
+            </div>
+            <button class="hero-control hero-control-previous" type="button" data-hero-previous aria-label="Previous image">${icon("arrow")}</button>
+            <button class="hero-control" type="button" data-hero-pause aria-label="Pause slideshow" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg></button>
+            <button class="hero-control" type="button" data-hero-next aria-label="Next image">${icon("arrow")}</button>
+          </div>
+        </div>
+        <p class="sr-only" data-hero-status aria-live="polite" aria-atomic="true"></p>
       </section>
 
-      <section class="intro-strip">
+      <section class="intro-strip" id="home-introduction">
         <div class="container intro-strip-inner">
           <p class="eyebrow">Good design is a way of thinking.</p>
           <p>From the first conversation to the final detail, we bring architecture, engineering, and imagination to the same table.</p>
