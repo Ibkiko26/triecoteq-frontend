@@ -1,6 +1,7 @@
 import { designPlans, portfolioProjects, type DesignPlan } from "./data";
 import { escapeHtml, formatUsd } from "./utils";
 import type { PageName } from "./pages";
+import { initHeroCarousel } from "./hero";
 
 const cartStorageKey = "teq-buy-plan-cart-v1";
 
@@ -344,6 +345,7 @@ function initContactForm(): void {
 export function initInteractions(page: PageName): void {
   initTheme();
   initNavigation();
+  if (page === "home") initHeroCarousel();
   cart = loadCart();
   updateCartBadges();
 
