@@ -58,15 +58,25 @@ function normalizePortfolioImage(path: string): string {
   return `/${parts.map((part) => encodeURIComponent(part)).join("/")}`;
 }
 
+const publishedPortfolio = portfolioContent.portfolioProjects.map((project) => ({
+  ...project,
+  image: normalizePortfolioImage(project.image)
+}));
+const publishedProjectIds = new Set(publishedPortfolio.map(({ id }) => id));
+
 export function updateContentFromStore(): boolean {
   const store = window.TEQContentStore;
   if (!store) return false;
 
   const data = store.getData();
-  portfolioProjects = data.portfolioProjects.map((project) => ({
-    ...project,
-    image: normalizePortfolioImage(project.image)
-  }));
+  // Deployments publish these records from Git. Keep local drafts that have no published counterpart.
+  portfolioProjects = [
+    ...publishedPortfolio,
+    ...data.portfolioProjects.filter(({ id }) => !publishedProjectIds.has(id)).map((project) => ({
+      ...project,
+      image: normalizePortfolioImage(project.image)
+    }))
+  ];
   designPlans = data.plans.map((plan) => ({
     ...plan,
     images: plan.images.filter(Boolean)
@@ -74,10 +84,7 @@ export function updateContentFromStore(): boolean {
   return true;
 }
 
-portfolioProjects = portfolioContent.portfolioProjects.map((project) => ({
-  ...project,
-  image: normalizePortfolioImage(project.image)
-}));
+portfolioProjects = publishedPortfolio;
 designPlans = planContent.map((plan) => ({ ...plan, images: plan.images }));
 
 export const services = [

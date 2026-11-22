@@ -376,4 +376,8 @@
     getPortfolioProjects: getPortfolioProjects,
     getPlans: getPlans
   };
+
+  if (typeof window.CustomEvent === "function") {
+    window.dispatchEvent(new CustomEvent("teq-content-store:change"));
+  }
 })(window);
