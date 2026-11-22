@@ -39,6 +39,8 @@ The Contact form uses `src/contact-api.js` to post to the site's `/api/submit-in
 
 An existing Vercel deployment can continue using its server-side `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_ID` while `SUPABASE_URL` is unset. With `SUPABASE_URL` set, the Edge Function handles all online enquiries. The form offers a prefilled email option if the backend is unavailable. Use `vercel dev` with a development `SUPABASE_URL` to test the API alongside Vite.
 
+The current Client Inquiries table has `Name`, `Email`, and `Message` fields. Set `AIRTABLE_SERVICE_IN_MESSAGE=true` in Vercel to include the selected service in the message. Tables with a dedicated `Service` field can leave this variable unset. Set the same variable as an Edge Function secret if that function writes to this table.
+
 ## Careers
 
 Edit `content/careers.json` to update the department and role menus or publish a confirmed vacancy. Each entry in `openings` needs a unique `id`, a `department` from the department IDs, a `role` from that department’s role list, a `location`, an `employment` label, and a short `description`. Remove closed vacancies from the list and redeploy. An empty list lets applicants register their interest in a role.
