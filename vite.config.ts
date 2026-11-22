@@ -11,6 +11,7 @@ export default defineConfig({
         about: "about.html",
         services: "services.html",
         portfolio: "portfolio.html",
+        careers: "careers.html",
         contact: "contact.html",
         plans: "buy-plan.html",
         checkout: "checkout.html"

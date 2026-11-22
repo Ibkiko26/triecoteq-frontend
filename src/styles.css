@@ -1545,6 +1545,142 @@ body[data-theme="dark"] .approach-band {
   font-size: 0.875rem;
 }
 
+.section-career-openings {
+  padding-block: clamp(3rem, 7vw, 6.5rem);
+}
+
+.career-filter {
+  display: grid;
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.career-filter select,
+.career-form select {
+  min-width: 0;
+  color: var(--ink);
+}
+
+.career-opening,
+.career-empty {
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.career-opening {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem 2rem;
+}
+
+.career-opening h3 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+
+.career-opening p,
+.career-empty p {
+  max-width: 42rem;
+  margin-bottom: 0.6rem;
+  color: var(--muted);
+}
+
+.career-opening p:last-child {
+  margin-bottom: 0;
+}
+
+.career-opening-meta,
+.career-privacy,
+.career-upload p {
+  font-size: 0.875rem;
+}
+
+.section-career-application {
+  background: var(--paper-deep);
+}
+
+.career-application-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  align-items: start;
+  gap: clamp(2rem, 7vw, 7rem);
+}
+
+.career-application-intro h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.02;
+}
+
+.career-application-intro p,
+.career-privacy,
+.career-upload p {
+  max-width: 36rem;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.career-application-intro [data-career-application-target] {
+  margin-top: 1rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.career-optional {
+  font-weight: 400;
+}
+
+.career-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.career-upload {
+  min-width: 0;
+  align-content: start;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper-light);
+}
+
+.career-upload input {
+  min-width: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  font-size: 0.875rem;
+}
+
+.career-upload input::file-selector-button {
+  min-height: 2.75rem;
+  margin-right: 0.65rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.career-upload input::file-selector-button:hover {
+  background: var(--paper-deep);
+}
+
+.career-form .button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
+.career-feedback {
+  margin: 0;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
 .contact-aside {
   display: flex;
   min-height: 31rem;
@@ -1725,7 +1861,7 @@ body[data-theme="dark"] .approach-band {
 
 @media (max-width: 1050px) {
   .primary-navigation {
-    gap: 1rem;
+    gap: clamp(0.6rem, 1.35vw, 1rem);
   }
 
   .hero-scroll-link {
@@ -1751,7 +1887,7 @@ body[data-theme="dark"] .approach-band {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 820px) {
   .utility-inner {
     min-height: 34px;
   }
@@ -1801,7 +1937,9 @@ body[data-theme="dark"] .approach-band {
   .theme-button {
     margin-top: 0.75rem;
   }
+}
 
+@media (max-width: 760px) {
   .home-hero {
     min-height: max(680px, calc(100svh - 104px));
   }
@@ -1970,7 +2108,8 @@ body[data-theme="dark"] .approach-band {
   }
 
   .checkout-layout,
-  .contact-layout {
+  .contact-layout,
+  .career-application-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -2049,7 +2188,9 @@ body[data-theme="dark"] .approach-band {
     font-size: 1.05rem;
   }
 
-  .form-pair {
+  .form-pair,
+  .career-opening,
+  .career-upload-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 

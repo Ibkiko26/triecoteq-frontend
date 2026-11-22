@@ -1,0 +1,44 @@
+{
+  "departments": [
+    {
+      "id": "architecture",
+      "name": "Architecture",
+      "roles": ["Junior Architect", "Architect", "Project Architect", "Architectural Assistant", "Graduate Architect", "Architecture Intern"]
+    },
+    {
+      "id": "interior-design",
+      "name": "Interior Design",
+      "roles": ["Interior Designer", "Junior Interior Designer", "Interior Design Assistant", "Furniture and Finishes Designer", "Interior Design Intern"]
+    },
+    {
+      "id": "technical-design",
+      "name": "Technical Design & BIM",
+      "roles": ["Architectural Technician", "Architectural Technologist", "CAD Technician", "BIM Modeller", "BIM Coordinator", "3D Architectural Visualiser"]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering & Building Services",
+      "roles": ["Structural Engineer", "Civil Engineer", "Mechanical Engineer", "Electrical Engineer", "Building Services Engineer", "MEP Technician"]
+    },
+    {
+      "id": "landscape-planning",
+      "name": "Landscape & Planning",
+      "roles": ["Landscape Architect", "Landscape Designer", "Urban Designer", "Urban Planner"]
+    },
+    {
+      "id": "construction",
+      "name": "Construction & Project Delivery",
+      "roles": ["Construction Project Manager", "Site Engineer", "Site Supervisor", "Clerk of Works", "Construction Foreperson", "Health and Safety Officer"]
+    },
+    {
+      "id": "cost-consultancy",
+      "name": "Quantity Surveying & Cost Consultancy",
+      "roles": ["Quantity Surveyor", "Assistant Quantity Surveyor", "Construction Estimator", "Contracts Administrator"]
+    }
+  ],
+  "openings": [],
+  "uploadLimits": {
+    "resume": 1000000,
+    "portfolio": 3000000
+  }
+}

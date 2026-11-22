@@ -1,7 +1,8 @@
 import { clientFeedback, designPlans, portfolioProjects, services, team, type DesignPlan, type PortfolioProject } from "./data";
+import { renderCareersSections } from "./careers";
 import { escapeHtml, formatUsd } from "./utils";
 
-export type PageName = "home" | "about" | "services" | "portfolio" | "contact" | "plans" | "checkout";
+export type PageName = "home" | "about" | "services" | "portfolio" | "careers" | "contact" | "plans" | "checkout";
 
 const navigation: Array<{ label: string; href: string; page: PageName }> = [
   { label: "Home", href: "index.html", page: "home" },
@@ -9,6 +10,7 @@ const navigation: Array<{ label: string; href: string; page: PageName }> = [
   { label: "Services", href: "services.html", page: "services" },
   { label: "Portfolio", href: "portfolio.html", page: "portfolio" },
   { label: "Ready-made plans", href: "buy-plan.html", page: "plans" },
+  { label: "Careers", href: "careers.html", page: "careers" },
   { label: "Contact", href: "contact.html", page: "contact" }
 ];
 
@@ -464,6 +466,11 @@ const pageRenderers: Record<PageName, () => string> = {
   about: aboutPage,
   services: servicesPage,
   portfolio: portfolioPage,
+  careers: () => `
+    <main id="main-content">
+      ${pageHero("<em>Careers</em>", "Explore opportunities across architecture, interior design, engineering and construction at our Nairobi practice.")}
+      ${renderCareersSections()}
+    </main>`,
   contact: contactPage,
   plans: plansPage,
   checkout: checkoutPage
@@ -474,6 +481,7 @@ const pageTitles: Record<PageName, string> = {
   about: "About",
   services: "Services",
   portfolio: "Portfolio",
+  careers: "Careers",
   contact: "Contact",
   plans: "Ready-made Plans",
   checkout: "Basket"

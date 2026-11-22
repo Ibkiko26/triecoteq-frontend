@@ -2,8 +2,9 @@ import "./styles.css";
 import { initInteractions, refreshInteractions } from "./interactions";
 import { refreshPlanListings, refreshProjectListings, renderPage, type PageName } from "./pages";
 import { updateContentFromStore } from "./data";
+import { initCareers } from "./careers";
 
-const pageNames = new Set<PageName>(["home", "about", "services", "portfolio", "contact", "plans", "checkout"]);
+const pageNames = new Set<PageName>(["home", "about", "services", "portfolio", "careers", "contact", "plans", "checkout"]);
 const page = document.body.dataset.page as PageName;
 const app = document.querySelector<HTMLElement>("#app");
 
@@ -18,6 +19,7 @@ if (!pageNames.has(page)) {
 updateContentFromStore();
 app.innerHTML = renderPage(page);
 initInteractions(page);
+if (page === "careers") initCareers();
 
 window.addEventListener("teq-content-store:change", () => {
   if (!updateContentFromStore()) return;
