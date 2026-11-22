@@ -364,7 +364,11 @@ function planCard(plan: DesignPlan): string {
       <div class="plan-body">
         <div class="plan-title-row"><h2>${escapeHtml(plan.title)}</h2><p class="plan-price">${oldPrice}<strong>${formatUsd(plan.currentPrice)}</strong></p></div>
         <p>${escapeHtml(plan.description)}</p>
-        <div class="plan-actions"><a class="text-link" href="contact.html?plan=${encodeURIComponent(plan.id)}">Ask about this plan <span aria-hidden="true">↗</span></a><button type="button" class="button button-dark button-small" data-add-plan="${escapeHtml(plan.id)}" ${plan.offer ? "disabled" : ""}>${plan.offer ? "Unlock at 3 plans" : "Add to basket"}</button></div>
+        <div class="plan-actions">
+          ${plan.images.length || plan.demoPdf ? `<button type="button" class="plan-demo-button" aria-label="View demo for ${escapeHtml(plan.title)}" data-plan-preview="${escapeHtml(plan.id)}">View demo</button>` : ""}
+          <a class="text-link" href="contact.html?plan=${encodeURIComponent(plan.id)}">Ask about this plan</a>
+          <button type="button" class="button button-dark button-small" data-add-plan="${escapeHtml(plan.id)}" ${plan.offer ? "disabled" : ""}>${plan.offer ? "Unlock at 3 plans" : "Add to basket"}</button>
+        </div>
         ${offerNote}
       </div>
     </article>`;
@@ -378,6 +382,7 @@ function plansPage(): string {
         <div class="container">
           <div class="plans-toolbar"><p>${designPlans.filter((plan) => !plan.offer).length} design packages</p><a class="text-link" href="checkout.html">View basket <span data-cart-count class="inline-count">0</span> <span aria-hidden="true">↗</span></a></div>
           <div class="plan-grid" data-plan-grid>${designPlans.map(planCard).join("")}</div>
+          <dialog class="plan-demo-dialog" aria-labelledby="plan-demo-title" data-plan-demo></dialog>
           <aside class="plans-note"><span class="eyebrow">A note on the drawings</span><p>Every site is different. We recommend confirming local requirements and engaging a local professional before building from any standard plan.</p></aside>
         </div>
       </section>
@@ -406,7 +411,7 @@ function checkoutPage(): string {
               <label><input type="radio" name="payment" value="USDT" /><span>USDT</span></label>
               <label><input type="radio" name="payment" value="USDC" /><span>USDC</span></label>
             </fieldset>
-            <p class="payment-disclaimer">No payment is taken here. We’ll confirm availability and next steps with you first.</p>
+            <p class="payment-disclaimer">Send your order enquiry and the studio will confirm availability and payment details. After payment is confirmed, the studio will send a private link to the drawing PDF.</p>
             <a class="button button-dark button-full" href="contact.html" data-checkout-continue aria-disabled="true">Continue to enquiry ${icon("arrow")}</a>
             <button type="button" class="clear-basket" data-clear-basket disabled>Clear basket</button>
           </aside>

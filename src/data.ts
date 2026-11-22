@@ -20,6 +20,7 @@ export interface DesignPlan {
   oldPrice: number | null;
   offer: boolean;
   images: string[];
+  demoPdf?: string;
 }
 
 interface ContentStore {
@@ -64,6 +65,16 @@ const publishedPortfolio = portfolioContent.portfolioProjects.map((project) => (
 }));
 const publishedProjectIds = new Set(publishedPortfolio.map(({ id }) => id));
 
+function normalizePlan(plan: DesignPlan): DesignPlan {
+  const demoPdf = plan.demoPdf && /^\/assets\/plan-demos\/[a-z0-9_-]+\.pdf$/i.test(plan.demoPdf)
+    ? plan.demoPdf
+    : undefined;
+  return { ...plan, images: plan.images.filter(Boolean), demoPdf };
+}
+
+const publishedPlans = planContent.map(normalizePlan);
+const publishedPlanIds = new Set(publishedPlans.map(({ id }) => id));
+
 export function updateContentFromStore(): boolean {
   const store = window.TEQContentStore;
   if (!store) return false;
@@ -77,15 +88,15 @@ export function updateContentFromStore(): boolean {
       image: normalizePortfolioImage(project.image)
     }))
   ];
-  designPlans = data.plans.map((plan) => ({
-    ...plan,
-    images: plan.images.filter(Boolean)
-  }));
+  designPlans = [
+    ...publishedPlans,
+    ...data.plans.filter(({ id }) => !publishedPlanIds.has(id)).map(normalizePlan)
+  ];
   return true;
 }
 
 portfolioProjects = publishedPortfolio;
-designPlans = planContent.map((plan) => ({ ...plan, images: plan.images }));
+designPlans = publishedPlans;
 
 export const services = [
   {

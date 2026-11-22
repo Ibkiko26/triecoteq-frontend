@@ -1285,6 +1285,47 @@ body[data-theme="dark"] .approach-band {
   border: 1px solid var(--line);
 }
 
+.plan-demo-dialog {
+  width: min(55rem, calc(100% - 2rem));
+  max-height: calc(100svh - 2rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.plan-demo-dialog::backdrop { background: #15241cbb; }
+.plan-demo-header, .plan-demo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+.plan-demo-header h2 { margin-bottom: 0; font-size: clamp(1.5rem, 4vw, 2.55rem); }
+.plan-demo-button {
+  min-height: 2.5rem;
+  padding: .35rem .65rem;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--paper-light);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.plan-demo-button:hover { background: var(--paper-deep); }
+.plan-demo-image { margin: 1rem 0 .75rem; }
+.plan-demo-image img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: min(52svh, 30rem);
+  object-fit: contain;
+  background: var(--paper-deep);
+}
+.plan-demo-controls p, .plan-demo-details p { margin: 0; color: var(--muted); }
+.plan-demo-controls p { white-space: nowrap; font-size: .8rem; }
+.plan-demo-details { display: grid; gap: .85rem; justify-items: start; margin-top: 1rem; }
+
 .plans-note .eyebrow,
 .plans-note p {
   margin: 0;

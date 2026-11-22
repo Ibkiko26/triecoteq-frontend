@@ -2,6 +2,7 @@ import { designPlans, portfolioProjects, type DesignPlan } from "./data";
 import { escapeHtml, formatUsd } from "./utils";
 import type { PageName } from "./pages";
 import { initHeroCarousel } from "./hero";
+import { openPlanPreview } from "./plan-preview";
 
 const cartStorageKey = "teq-buy-plan-cart-v1";
 
@@ -312,7 +313,8 @@ function prefillContactForm(): void {
     message.value = `${context.join("\n")}\n\nA little more about my project:`;
   }
 
-  const requestedService = parameters.get("service") || (parameters.has("plan") ? "Ready-made plan" : "");
+  const isPlanOrder = parameters.has("plan") || parameters.has("order");
+  const requestedService = parameters.get("service") || (isPlanOrder ? "Ready-made plan" : "");
   if (service && requestedService) {
     const option = Array.from(service.options).find((candidate) => candidate.value.toLowerCase() === requestedService.toLowerCase());
     if (option) service.value = option.value;
@@ -400,6 +402,8 @@ export function initInteractions(page: PageName): void {
     if (!(target instanceof Element)) return;
     const button = target.closest<HTMLButtonElement>("[data-add-plan]");
     if (button) addPlan(button.dataset.addPlan ?? "");
+    const preview = target.closest<HTMLButtonElement>("[data-plan-preview]");
+    if (preview) openPlanPreview(preview.dataset.planPreview ?? "");
   });
 
   document.querySelectorAll<HTMLElement>("[data-checkout-items]").forEach((container) => {

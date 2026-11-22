@@ -299,7 +299,8 @@
       currentPrice: safeNumber(normalized.currentPrice) || 0,
       oldPrice: safeNumber(normalized.oldPrice),
       offer: Boolean(normalized.offer),
-      images: sanitizeImages(normalized.images, normalized.image)
+      images: sanitizeImages(normalized.images, normalized.image),
+      demoPdf: safeString(normalized.demoPdf)
     };
   }
 
