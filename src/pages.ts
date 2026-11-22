@@ -12,6 +12,34 @@ const navigation: Array<{ label: string; href: string; page: PageName }> = [
   { label: "Contact", href: "contact.html", page: "contact" }
 ];
 
+// The Facebook and Pinterest marks are from Bootstrap Icons (MIT).
+const socialLinks = [
+  {
+    label: "Facebook",
+    href: "https://web.facebook.com/TriEcoTeqLTD",
+    viewBox: "0 0 16 16",
+    mark: '<path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>'
+  },
+  {
+    label: "X",
+    href: "https://x.com/TriEcoTeq",
+    viewBox: "0 0 24 24",
+    mark: '<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.59-6.64 7.59H.47l8.6-9.84L0 1.15h7.59l5.25 6.94zM17.61 20.64h2.04L6.49 3.24H4.3z"/>'
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/triecoteq",
+    viewBox: "2 2 20 20",
+    mark: '<g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.2"/></g><circle cx="17" cy="7" r="1.2"/>'
+  },
+  {
+    label: "Pinterest",
+    href: "https://www.pinterest.com/Triecoteq/",
+    viewBox: "0 0 16 16",
+    mark: '<path d="M8 0a8 8 0 0 0-2.915 15.452c-.07-.633-.134-1.606.027-2.297.146-.625.938-3.977.938-3.977s-.239-.479-.239-1.187c0-1.113.645-1.943 1.448-1.943.682 0 1.012.512 1.012 1.127 0 .686-.437 1.712-.663 2.663-.188.796.4 1.446 1.185 1.446 1.422 0 2.515-1.5 2.515-3.664 0-1.915-1.377-3.254-3.342-3.254-2.276 0-3.612 1.707-3.612 3.471 0 .688.265 1.425.595 1.826a.24.24 0 0 1 .056.23c-.061.252-.196.796-.222.907-.035.146-.116.177-.268.107-1-.465-1.624-1.926-1.624-3.1 0-2.523 1.834-4.84 5.286-4.84 2.775 0 4.932 1.977 4.932 4.62 0 2.757-1.739 4.976-4.151 4.976-.811 0-1.573-.421-1.834-.919l-.498 1.902c-.181.695-.669 1.566-.995 2.097A8 8 0 1 0 8 0"/>'
+  }
+];
+
 function icon(name: "arrow" | "sun" | "moon" | "menu" | "close" | "plus" | "minus"): string {
   const paths: Record<typeof name, string> = {
     arrow: '<path d="M4 12h15M13 5l7 7-7 7"/>',
@@ -60,6 +88,12 @@ function header(page: PageName): string {
 }
 
 function footer(): string {
+  const socialIcons = socialLinks.map(({ label, href, viewBox, mark }) => `
+    <a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${label} (opens in a new tab)" title="${label}">
+      <svg viewBox="${viewBox}" fill="currentColor" aria-hidden="true">${mark}</svg>
+    </a>
+  `).join("");
+
   return `
     <footer class="site-footer">
       <div class="container footer-main">
@@ -79,11 +113,7 @@ function footer(): string {
           <p class="footer-label">Say hello</p>
           <a class="footer-link" href="tel:+254728240363">+254 728 240 363</a>
           <a class="footer-link" href="mailto:triecoteq@gmail.com">triecoteq@gmail.com</a>
-          <div class="footer-socials" aria-label="Social media">
-            <a href="https://www.instagram.com/TRIECOTEQ" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
-            <a href="https://www.facebook.com/TriEcoTeqLTD" target="_blank" rel="noopener noreferrer">Facebook ↗</a>
-            <a href="https://x.com/TRIECOTEQ" target="_blank" rel="noopener noreferrer">X ↗</a>
-          </div>
+          <nav class="footer-socials" aria-label="Social media">${socialIcons}</nav>
         </div>
       </div>
       <div class="container footer-bottom">
