@@ -1,12 +1,13 @@
-import { designPlans, portfolioProjects, services, team, type DesignPlan, type PortfolioProject } from "./data";
+import { clientFeedback, designPlans, portfolioProjects, services, team, type DesignPlan, type PortfolioProject } from "./data";
 import { escapeHtml, formatUsd } from "./utils";
 
 export type PageName = "home" | "about" | "services" | "portfolio" | "contact" | "plans" | "checkout";
 
 const navigation: Array<{ label: string; href: string; page: PageName }> = [
-  { label: "Studio", href: "about.html", page: "about" },
+  { label: "Home", href: "index.html", page: "home" },
+  { label: "About", href: "about.html", page: "about" },
   { label: "Services", href: "services.html", page: "services" },
-  { label: "Work", href: "portfolio.html", page: "portfolio" },
+  { label: "Portfolio", href: "portfolio.html", page: "portfolio" },
   { label: "Ready-made plans", href: "buy-plan.html", page: "plans" },
   { label: "Contact", href: "contact.html", page: "contact" }
 ];
@@ -35,8 +36,8 @@ function header(page: PageName): string {
     <header class="site-header">
       <div class="utility-bar">
         <div class="container utility-inner">
-          <span>Nairobi, Kenya <span class="utility-dot"></span> Architecture, interiors &amp; place</span>
-          <a href="mailto:triecoteq@gmail.com">Start a conversation <span aria-hidden="true">↗</span></a>
+          <span>Nairobi, Kenya</span>
+          <a href="tel:+254728240363">+254 728 240 363</a>
         </div>
       </div>
       <div class="container nav-shell">
@@ -67,7 +68,7 @@ function footer(): string {
             <img src="/assets/brand/Tri-EcoTeq%20Architects%20Logo.png" alt="" width="42" height="42" />
             <span>Tri-EcoTeq <small>Architects</small></span>
           </a>
-          <p>Thoughtful architecture for the way people live, work, and grow.</p>
+          <p>Architecture, interiors and engineering for projects in Nairobi and beyond.</p>
         </div>
         <div>
           <p class="footer-label">Find us</p>
@@ -87,17 +88,16 @@ function footer(): string {
       </div>
       <div class="container footer-bottom">
         <span>© ${new Date().getFullYear()} Tri-EcoTeq Architects</span>
-        <span>Designed with care in Nairobi</span>
       </div>
     </footer>
     <div class="toast" role="status" aria-live="polite" data-toast></div>`;
 }
 
-function pageHero(eyebrow: string, title: string, description: string): string {
+function pageHero(title: string, description: string, eyebrow?: string): string {
   return `
     <section class="page-intro">
       <div class="container">
-        <p class="eyebrow">${eyebrow}</p>
+        ${eyebrow ? `<p class="eyebrow">${eyebrow}</p>` : ""}
         <h1>${title}</h1>
         <p class="intro-copy">${description}</p>
       </div>
@@ -142,14 +142,13 @@ function homePage(): string {
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="container home-hero-content">
           <div class="hero-copy">
-            <p class="eyebrow"><span class="eyebrow-line"></span> Tri-EcoTeq Architects · Nairobi</p>
-            <h1>Room to live.<br /><em>Space to become.</em></h1>
-            <p class="hero-description">We shape homes and places with a clear point of view: beautiful, practical, and made for the lives unfolding inside them.</p>
+            <p class="eyebrow"><span class="eyebrow-line"></span> Tri-EcoTeq Architects</p>
+            <h1>Architecture &amp; <br /><em>interior design</em></h1>
+            <p class="hero-description">We turn your ideas into contemporary homes and spaces that suit the way you live, the site and your budget.</p>
             <div class="button-row">
-              <a class="button button-light" href="portfolio.html">Explore our work ${icon("arrow")}</a>
-              <a class="text-link" href="contact.html">Tell us what you’re planning <span aria-hidden="true">↗</span></a>
+              <a class="button button-light" href="portfolio.html">Explore our portfolio</a>
+              <a class="text-link" href="contact.html">Discuss your project</a>
             </div>
-            <div class="hero-footnote"><span class="status-dot"></span> Design-led. Detail-minded. Built around you.</div>
           </div>
         </div>
         <div class="container hero-bottom-bar">
@@ -169,75 +168,81 @@ function homePage(): string {
 
       <section class="intro-strip" id="home-introduction">
         <div class="container intro-strip-inner">
-          <p class="eyebrow">Good design is a way of thinking.</p>
-          <p>From the first conversation to the final detail, we bring architecture, engineering, and imagination to the same table.</p>
-          <a class="round-link" href="about.html" aria-label="Meet the studio">${icon("arrow")}</a>
+          <h2 class="eyebrow">About the practice</h2>
+          <p>Tri-EcoTeq brings architects, designers and engineers together in Nairobi. We work closely with you from the initial brief through to the details your project team needs to build.</p>
+          <a class="text-link" href="about.html">About Tri-EcoTeq</a>
+        </div>
+      </section>
+
+      <section class="approach-band">
+        <div class="container approach-grid">
+          <p class="eyebrow">Services</p>
+          <h2>From concept to <br /><em>construction drawings</em></h2>
+          <div><p>We coordinate architecture, interiors, landscape and structural design with mechanical and electrical drawings. Our 3D renderings help you understand the design before construction begins.</p><a class="text-link text-link-light" href="services.html">Explore our services</a></div>
         </div>
       </section>
 
       <section class="section section-work">
         <div class="container">
           <div class="section-heading">
-            <div><p class="eyebrow">A few things we’ve made</p><h2>Selected work<span class="heading-period">.</span></h2></div>
-            <a class="text-link" href="portfolio.html">View all projects <span aria-hidden="true">↗</span></a>
+            <h2>Selected work</h2>
+            <a class="text-link" href="portfolio.html">View the portfolio</a>
           </div>
           <div class="project-grid project-grid-home" data-home-projects>${featured}</div>
         </div>
       </section>
 
-      <section class="approach-band">
-        <div class="container approach-grid">
-          <p class="eyebrow">01 — Our approach</p>
-          <h2>Make it meaningful.<br /><em>Make it make sense.</em></h2>
-          <div><p>We believe good architecture earns its place: it answers a real need, makes the most of its setting, and stands up to everyday life.</p><a class="text-link text-link-light" href="services.html">How we can help <span aria-hidden="true">↗</span></a></div>
-        </div>
-      </section>
-
       <section class="section section-contact-cta">
         <div class="container contact-cta">
-          <p class="eyebrow">Your project starts somewhere</p>
-          <h2>Let’s start with<br /><em>a conversation.</em></h2>
-          <a class="button button-light" href="contact.html">Get in touch ${icon("arrow")}</a>
+          <h2>Planning a home?</h2>
+          <p>Tell us what you have in mind and we’ll help you work out where to start.</p>
+          <a class="button button-light" href="contact.html">Get in touch</a>
         </div>
       </section>
     </main>`;
 }
 
 function aboutPage(): string {
-  const teamCards = team.map((member, index) => `
+  const teamCards = team.map((member) => `
     <article class="team-card">
       <div class="team-photo"><img src="${member.image}" alt="${escapeHtml(member.name)}" loading="lazy" /></div>
-      <div class="team-caption"><span class="eyebrow">${String(index + 1).padStart(2, "0")} / ${escapeHtml(member.role)}</span><h3>${escapeHtml(member.name)}</h3><p>${escapeHtml(member.focus)}</p></div>
+      <div class="team-caption"><span class="eyebrow">${escapeHtml(member.role)}</span><h3>${escapeHtml(member.name)}</h3><p>${escapeHtml(member.focus)}</p></div>
     </article>`).join("");
+  const feedbackItems = clientFeedback.map(({ name, summary }) => `
+    <li><p>${escapeHtml(summary)}</p><p class="feedback-name">${escapeHtml(name)}</p></li>
+  `).join("");
 
   return `
     <main id="main-content">
-      ${pageHero("The studio", "A clear idea,<br /><em>carefully made.</em>", "We are a Nairobi-based team of architects, designers, and engineers who believe thoughtful work should feel as good as it functions.")}
+      ${pageHero("About <em>Tri-EcoTeq</em>", "We are a Nairobi-based practice bringing architecture, interior design and engineering together to meet the needs of each client.")}
       <section class="section section-story">
         <div class="container story-grid">
-          <p class="eyebrow">A practice built on trust</p>
-          <div><h2>Good work grows from good relationships.</h2><p>Tri-EcoTeq began with independent design work by founder Braxton Muma. Referrals grew into a practice, and a trusted circle of colleagues became a studio with architecture, structural design, and visualization under one roof.</p><p>Today, we bring those disciplines together early. Clients get one thoughtful team, clear communication, and a design that respects both the brief and the budget.</p><a class="text-link" href="contact.html">Meet us over a project brief <span aria-hidden="true">↗</span></a></div>
-          <div class="story-aside"><span>10<span>+</span></span><p>years shaping projects with care</p></div>
-        </div>
-      </section>
-      <section class="section section-team">
-        <div class="container">
-          <div class="section-heading"><div><p class="eyebrow">People make the practice</p><h2>Meet the team<span class="heading-period">.</span></h2></div><p>Different strengths, one shared commitment to thoughtful, buildable design.</p></div>
-          <div class="team-grid">${teamCards}</div>
+          <h2>Our story</h2>
+          <div><p>Tri-EcoTeq grew out of founder Braxton Muma’s independent design work. As client referrals grew, he brought together colleagues with expertise in architecture, building services, structural planning and 3D modelling.</p><p>We start by understanding what each client needs and bring the relevant specialists into the conversation early. That helps us resolve design and construction questions while keeping the project aligned with the brief and budget.</p><a class="text-link" href="contact.html">Talk to our team</a></div>
         </div>
       </section>
       <section class="section section-values">
         <div class="container">
-          <div class="section-heading"><div><p class="eyebrow">What we believe</p><h2>Design with intent<span class="heading-period">.</span></h2></div></div>
+          <div class="section-heading"><h2>Our design philosophy</h2><p>We aim for buildings that are functional, economical, structurally sound and visually appealing.</p></div>
           <div class="values-grid">
-            <article><span>01</span><h3>Listen before drawing.</h3><p>The best brief is a conversation. We take time to understand what matters and what is possible.</p></article>
-            <article><span>02</span><h3>Make every decision count.</h3><p>Good materials, clear plans, and careful coordination help a project feel considered from every angle.</p></article>
-            <article><span>03</span><h3>Stay close to the build.</h3><p>Practical thinking and steady collaboration carry the design through to the finished place.</p></article>
+            <article><h3>Imagine</h3><p>Listen to the client and explore what the brief and site make possible.</p></article>
+            <article><h3>Test</h3><p>Assess ideas against how spaces will be used, what they will cost and how they can be built.</p></article>
+            <article><h3>Plan</h3><p>Coordinate the design, engineering and materials before the work reaches site.</p></article>
+            <article><h3>Deliver</h3><p>Prepare the drawings and work with the project team to carry the design through construction.</p></article>
           </div>
         </div>
       </section>
-      <section class="section section-quote">
-        <div class="container quote-layout"><p class="eyebrow">The way we work</p><blockquote>“We want every project to feel unmistakably its own—and entirely right for the people who call it theirs.”</blockquote><a class="text-link" href="services.html">Discover our services <span aria-hidden="true">↗</span></a></div>
+      <section class="section section-team">
+        <div class="container">
+          <div class="section-heading"><h2>Meet the team</h2></div>
+          <div class="team-grid">${teamCards}</div>
+        </div>
+      </section>
+      <section class="section section-feedback">
+        <div class="container">
+          <div class="section-heading"><h2>Client feedback</h2><p>Summarised from testimonials shared on our original website.</p></div>
+          <ul class="feedback-grid">${feedbackItems}</ul>
+        </div>
       </section>
     </main>`;
 }
@@ -245,28 +250,25 @@ function aboutPage(): string {
 function servicesPage(): string {
   const serviceCards = services.map((service) => `
     <article class="service-card">
-      <span class="service-number">${service.number}</span>
-      <div><h2>${escapeHtml(service.title)}</h2><p>${escapeHtml(service.description)}</p><a href="contact.html?service=${encodeURIComponent(service.title)}" class="service-link" aria-label="Enquire about ${escapeHtml(service.title)}">${icon("arrow")}</a></div>
+      <h2>${escapeHtml(service.title)}</h2>
+      <p>${escapeHtml(service.description)}</p>
+      <a class="text-link service-link" href="contact.html?service=${encodeURIComponent(service.title)}" aria-label="Enquire about ${escapeHtml(service.title)}">Enquire</a>
     </article>`).join("");
 
   return `
     <main id="main-content">
-      ${pageHero("What we do", "Ideas into places.<br /><em>Plans into reality.</em>", "A considered set of services for projects at every scale—from the first sketch to the final drawing set.")}
+      ${pageHero("Design <em>services</em>", "From early concepts to construction drawings, we bring the disciplines your project needs into one coordinated design process.")}
       <section class="section section-services">
         <div class="container">
-          <div class="services-intro"><p class="eyebrow">A connected set of disciplines</p><p>Architecture, structure, interiors, and visualization work best when they work together. Our integrated team helps keep the thinking joined up from day one.</p></div>
           <div class="service-list">${serviceCards}</div>
         </div>
       </section>
       <section class="approach-band">
         <div class="container approach-grid">
-          <p class="eyebrow">02 — From first meeting to handover</p>
-          <h2>A good process<br /><em>makes room for good work.</em></h2>
-          <div><p>We begin by listening, then define the brief, test ideas, and coordinate the details. You stay involved at every key decision—without having to manage every moving part.</p><a class="text-link text-link-light" href="contact.html">Talk through your brief <span aria-hidden="true">↗</span></a></div>
+          <p class="eyebrow">Working together</p>
+          <h2>From brief to <br /><em>building site</em></h2>
+          <div><p>We agree on the brief with you, test design options and coordinate the technical details. We discuss key decisions with you as the project progresses so the design reflects your priorities.</p><a class="text-link text-link-light" href="contact.html">Talk through your brief</a></div>
         </div>
-      </section>
-      <section class="section">
-        <div class="container service-cta"><p class="eyebrow">Have a project in mind?</p><h2>Let’s work out<br /><em>what it could be.</em></h2><a class="button button-dark" href="contact.html">Start a conversation ${icon("arrow")}</a></div>
       </section>
     </main>`;
 }
@@ -275,10 +277,11 @@ function portfolioPage(): string {
   const projects = portfolioProjects.map(projectCard).join("");
   const categories = [...new Set(portfolioProjects.map((project) => project.category))].sort();
   const years = [...new Set(portfolioProjects.map((project) => project.year))].sort().reverse();
+  const archiveProject = "Proposed three-bedroom home";
 
   return `
     <main id="main-content">
-      ${pageHero("Selected work", "Made for a place.<br /><em>Made for people.</em>", "A selection of ideas, studies, and built work shaped by context, collaboration, and the details of everyday life.")}
+      ${pageHero("<em>Portfolio</em>", "Explore residential, interior and commercial work alongside hospitality, institutional and civic projects. The portfolio includes design proposals, studies and completed work.")}
       <section class="section section-portfolio">
         <div class="container">
           <div class="portfolio-toolbar">
@@ -292,8 +295,21 @@ function portfolioPage(): string {
           <p class="empty-state" data-project-empty hidden>No projects match these filters. Try another combination.</p>
         </div>
       </section>
+      <section class="section section-archive">
+        <div class="container">
+          <div class="section-heading"><h2>From our archive</h2></div>
+          <article class="archive-project">
+            <img src="/assets/images/archived-three-bedroom-house.png" alt="Street-level rendering of the two-storey house with orange rooflines and glazed balconies" width="768" height="432" loading="lazy" />
+            <div>
+              <h3>${archiveProject}</h3>
+              <p>The design includes a guest bedroom and staff quarters.</p>
+              <a class="text-link" href="contact.html?project=${encodeURIComponent(archiveProject)}">Ask about this design</a>
+            </div>
+          </article>
+        </div>
+      </section>
       <section class="section section-portfolio-note">
-        <div class="container note-grid"><p class="eyebrow">Every project has a starting point</p><p>Need something specific? Tell us a little about your site, your brief, or the thing you can’t stop thinking about.</p><a class="round-link" href="contact.html" aria-label="Discuss a project">${icon("arrow")}</a></div>
+        <div class="container note-grid"><p class="eyebrow">Planning to build?</p><p>Tell us about your site and the spaces you need.</p><a class="text-link" href="contact.html">Discuss your project</a></div>
       </section>
     </main>`;
 }
@@ -325,7 +341,7 @@ function planCard(plan: DesignPlan): string {
 function plansPage(): string {
   return `
     <main id="main-content">
-      ${pageHero("Ready-made collection", "A good plan is<br /><em>a good place to start.</em>", "Explore completed residential design packages with coordinated architectural and structural drawings, ready to make your own.")}
+      ${pageHero("A good plan is<br /><em>a good place to start.</em>", "Explore completed residential design packages with coordinated architectural and structural drawings, ready to make your own.", "Ready-made collection")}
       <section class="section section-plans">
         <div class="container">
           <div class="plans-toolbar"><p>${designPlans.filter((plan) => !plan.offer).length} design packages</p><a class="text-link" href="checkout.html">View basket <span data-cart-count class="inline-count">0</span> <span aria-hidden="true">↗</span></a></div>
@@ -339,7 +355,7 @@ function plansPage(): string {
 function checkoutPage(): string {
   return `
     <main id="main-content">
-      ${pageHero("Your selection", "The next step<br /><em>starts here.</em>", "Review your selected plans and tell us how you would like to continue.")}
+      ${pageHero("The next step<br /><em>starts here.</em>", "Review your selected plans and tell us how you would like to continue.", "Your selection")}
       <section class="section section-checkout">
         <div class="container checkout-layout">
           <section class="checkout-items-panel">
@@ -368,31 +384,44 @@ function checkoutPage(): string {
 }
 
 function contactPage(): string {
+  const serviceOptions = services.map(({ title }) => `<option>${escapeHtml(title)}</option>`).join("");
+
   return `
     <main id="main-content">
-      ${pageHero("Start a conversation", "Tell us what you’re<br /><em>thinking about.</em>", "A first note doesn’t need to be a complete brief. Share what you know so far, and we’ll take it from there.")}
+      ${pageHero("Contact <em>us</em>", "Tell us about a project, ask about our services or call to arrange a visit to our Nairobi studio.")}
       <section class="section section-contact">
         <div class="container contact-layout">
           <div class="contact-form-wrap">
-            <p class="eyebrow">The first conversation</p>
-            <h2>What are you<br />hoping to make?</h2>
+            <h2>Project enquiry</h2>
             <form class="contact-form" data-contact-form action="mailto:triecoteq@gmail.com" method="post" enctype="text/plain">
               <div class="form-pair">
-                <label>Your name<input name="name" type="text" autocomplete="name" required placeholder="Name" /></label>
+                <label>Your name<input name="name" type="text" autocomplete="name" required /></label>
                 <label>Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label>
               </div>
-              <label>What kind of project?<select name="service"><option value="">Choose one</option><option>Architecture</option><option>Interior design</option><option>Structural design</option><option>Working drawings</option><option>3D visualization</option><option>Ready-made plan</option><option>Something else</option></select></label>
-              <label>A little about it<textarea name="message" rows="5" data-contact-message required placeholder="Location, project type, what you have in mind…"></textarea></label>
-              <button class="button button-dark" type="submit">Prepare your message ${icon("arrow")}</button>
-              <p class="form-note" data-contact-feedback>Submitting opens your email app with your enquiry ready to send.</p>
+              <div class="form-field">
+                <label for="enquiry-service">Service</label>
+                <select id="enquiry-service" name="service"><option value="">Choose a service</option>${serviceOptions}<option>Ready-made plan</option><option>Something else</option></select>
+              </div>
+              <label>Project details<textarea name="message" rows="5" data-contact-message required placeholder="Share the project location and what you have in mind."></textarea></label>
+              <button class="button button-dark" type="submit">Prepare enquiry</button>
+              <p class="form-note" data-contact-feedback>This opens your email app with your enquiry ready to send.</p>
             </form>
           </div>
           <aside class="contact-aside">
-            <div class="contact-aside-top"><p class="eyebrow">Come say hello</p><h3>WoodVale Avenue<br />Westlands, Nairobi</h3><a class="text-link" href="https://maps.google.com/?q=WoodVale+Avenue+Westlands+Nairobi" target="_blank" rel="noopener noreferrer">Get directions <span aria-hidden="true">↗</span></a></div>
-            <div class="contact-aside-bottom">
-              <p><span>Call</span><a href="tel:+254728240363">+254 728 240 363</a></p>
-              <p><span>Email</span><a href="mailto:triecoteq@gmail.com">triecoteq@gmail.com</a></p>
-              <p><span>Studio hours</span><span>Mon–Thu 8–5 · Fri 8–4<br />Sat 10:30–3 · Sun closed</span></p>
+            <div class="contact-aside-top"><h2>Visit the studio</h2><address>WoodVale Avenue<br />Westlands, Nairobi, Kenya</address><a class="text-link" href="https://maps.google.com/?q=WoodVale+Avenue+Westlands+Nairobi" target="_blank" rel="noopener noreferrer">Get directions</a></div>
+            <div>
+              <dl class="contact-details">
+                <div><dt>Call</dt><dd><a href="tel:+254728240363">+254 728 240 363</a></dd></div>
+                <div><dt>Email</dt><dd><a href="mailto:triecoteq@gmail.com">triecoteq@gmail.com</a></dd></div>
+              </dl>
+              <h3>Studio hours</h3>
+              <dl class="contact-details">
+                <div><dt>Monday–Thursday</dt><dd>8:00 am–5:00 pm</dd></div>
+                <div><dt>Friday</dt><dd>8:00 am–4:00 pm</dd></div>
+                <div><dt>Saturday</dt><dd>10:30 am–3:00 pm</dd></div>
+                <div><dt>Sunday</dt><dd>Closed</dd></div>
+              </dl>
+              <p class="holiday-hours">Holiday hours may vary.</p>
             </div>
           </aside>
         </div>
@@ -412,9 +441,9 @@ const pageRenderers: Record<PageName, () => string> = {
 
 const pageTitles: Record<PageName, string> = {
   home: "Home",
-  about: "The Studio",
+  about: "About",
   services: "Services",
-  portfolio: "Selected Work",
+  portfolio: "Portfolio",
   contact: "Contact",
   plans: "Ready-made Plans",
   checkout: "Basket"

@@ -82,34 +82,40 @@ designPlans = planContent.map((plan) => ({ ...plan, images: plan.images }));
 
 export const services = [
   {
-    number: "01",
     title: "Architecture",
-    description: "From first sketch to planning set, we shape homes and workplaces around the people who use them."
+    description: "We design homes and other buildings around your brief, site and budget, developing concepts into coordinated architectural drawings."
   },
   {
-    number: "02",
     title: "Interior design",
-    description: "Material, light, and furniture come together in interiors that feel considered and easy to live in."
+    description: "We plan layouts, lighting, finishes and furnishings to make interiors comfortable and practical for everyday use."
   },
   {
-    number: "03",
     title: "Structural design",
-    description: "Clear engineering coordination keeps the ambition of a design grounded in buildable detail."
+    description: "We develop and coordinate structural designs that support the architecture and give the construction team a clear basis for building."
   },
   {
-    number: "04",
+    title: "Mechanical drawings",
+    description: "We prepare mechanical services drawings and coordinate system layouts with the architecture and structure."
+  },
+  {
+    title: "Electrical drawings",
+    description: "We prepare drawings for lighting and power, coordinating their layouts with how the building will be used."
+  },
+  {
+    title: "Landscape design",
+    description: "We plan gardens, outdoor living areas and routes through the site so they work with the building and its surroundings."
+  },
+  {
     title: "Working drawings",
-    description: "Detailed, coordinated documentation gives the project team the clarity to build with confidence."
+    description: "We document dimensions, materials and construction details in coordinated drawing sets for the project team."
   },
   {
-    number: "05",
     title: "3D visualization",
-    description: "Spatial studies and rendered views help make the important decisions before construction begins."
+    description: "We create 3D models and renderings so you can see how spaces, materials and finishes work together before construction begins."
   },
   {
-    number: "06",
     title: "Project advisory",
-    description: "Practical guidance through consultants, budgets, and construction protects the intent of the work."
+    description: "We guide you through design decisions, budgets and consultant coordination as the project moves towards construction."
   }
 ];
 
@@ -129,13 +135,28 @@ export const team = [
   {
     name: "Wilfred Omondi",
     role: "Co-founder",
-    focus: "Structural planning, performance, and durability.",
+    focus: "Architectural design and structural planning.",
     image: "/assets/team/Wilfred%20Omondi.png"
   },
   {
     name: "Joseph Mbugua",
     role: "Architectural planner",
-    focus: "Interior design and project documentation.",
+    focus: "Architectural planning, interior design and project documentation.",
     image: "/assets/team/Joseph%20Mbugua.jpg"
+  }
+];
+
+export const clientFeedback = [
+  {
+    name: "Jennifer T.",
+    summary: "Recommended the practice after seeing the quality of its work early on."
+  },
+  {
+    name: "Brian P.",
+    summary: "Felt confident he would return to the team for his next project."
+  },
+  {
+    name: "Angela C.",
+    summary: "Appreciated how the team developed her initial idea and found the service affordable."
   }
 ];
