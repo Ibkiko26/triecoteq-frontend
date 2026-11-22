@@ -3,6 +3,7 @@ import { escapeHtml, formatUsd } from "./utils";
 import type { PageName } from "./pages";
 import { initHeroCarousel } from "./hero";
 import { openPlanPreview } from "./plan-preview";
+import { submitContactInquiry } from "./contact-api.js";
 
 const cartStorageKey = "teq-buy-plan-cart-v1";
 
@@ -328,7 +329,6 @@ function initContactForm(): void {
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const feedback = form.querySelector<HTMLElement>("[data-contact-feedback]")!;
   const fallback = form.querySelector<HTMLAnchorElement>("[data-contact-email-fallback]")!;
-  const unavailable = "Online enquiries are temporarily unavailable. You can send your enquiry by email instead.";
   let editedDuringSubmission = false;
 
   const showEmailFallback = (): void => {
@@ -358,7 +358,7 @@ function initContactForm(): void {
     event.preventDefault();
     if (button.disabled || !form.reportValidity()) return;
 
-    const values = Object.fromEntries(new FormData(form));
+    const values = new FormData(form);
     editedDuringSubmission = false;
     button.disabled = true;
     button.textContent = "Sending…";
@@ -366,23 +366,15 @@ function initContactForm(): void {
     fallback.hidden = true;
 
     try {
-      const response = await fetch(form.action, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values)
-      });
-      const result = await response.json().catch(() => null);
-      if (!response.ok || result?.success !== true) {
-        feedback.textContent = typeof result?.error === "string" ? result.error : unavailable;
-        if (response.status >= 500 || !result) showEmailFallback();
+      const result = await submitContactInquiry(form.action, values);
+      if (!result.accepted) {
+        feedback.textContent = result.error;
+        if (result.offerEmail) showEmailFallback();
         return;
       }
 
       if (!editedDuringSubmission) form.reset();
       feedback.textContent = "Thank you. We’ve received your enquiry.";
-    } catch {
-      feedback.textContent = unavailable;
-      showEmailFallback();
     } finally {
       button.disabled = false;
       button.textContent = "Send enquiry";

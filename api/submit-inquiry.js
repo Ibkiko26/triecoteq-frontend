@@ -10,6 +10,32 @@ function getText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+async function forwardInquiry(projectUrl, submission) {
+  try {
+    const endpoint = new URL("/functions/v1/submit-inquiry", projectUrl);
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(submission),
+      redirect: "error",
+      signal: AbortSignal.timeout(15_000)
+    });
+    const result = await response.json().catch(() => null);
+
+    if (response.status === 201 && result?.success === true) {
+      return reply(201, { success: true });
+    }
+    if ([400, 413, 415].includes(response.status) && typeof result?.error === "string") {
+      return reply(response.status, { error: result.error });
+    }
+
+    console.error("Supabase did not accept an enquiry", response.status);
+  } catch (error) {
+    console.error("Supabase enquiry could not be submitted", error instanceof Error ? error.name : "UnknownError");
+  }
+  return reply(503, { error: unavailable });
+}
+
 async function submitInquiry(request) {
   if (request.method !== "POST") {
     return reply(405, { error: "Use the Contact page to send an enquiry." }, { Allow: "POST" });
@@ -52,6 +78,9 @@ async function submitInquiry(request) {
   if (!message || message.length > 8000 || service.length > 120) {
     return reply(400, { error: "Enter project details of up to 8,000 characters." });
   }
+
+  const projectUrl = process.env.SUPABASE_URL?.trim();
+  if (projectUrl) return forwardInquiry(projectUrl, { name, email, service, message });
 
   const token = process.env.AIRTABLE_TOKEN?.trim();
   const baseId = process.env.AIRTABLE_BASE_ID?.trim();

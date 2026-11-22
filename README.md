@@ -32,17 +32,12 @@ Vite builds the public pages into `dist/`. The build script copies the existing 
 
 ## Project enquiries
 
-The Contact form posts to `/api/submit-inquiry`. Create or select a private Airtable table with the fields `Name` (single-line text), `Email` (email), `Service` (single-line text), and `Message` (long text).
+The Contact form uses `src/contact-api.js` to post to the site's `/api/submit-inquiry` route. The route forwards enquiries to the backend's Supabase `submit-inquiry` Edge Function, and the form confirms receipt after Airtable accepts the record.
 
-In the Vercel project’s Production environment variables, add:
+1. Follow the enquiry setup in the [backend repository](https://github.com/Ibkiko26/triecoteq-backend#project-enquiries) to configure the Airtable table and secrets, then deploy `submit-inquiry` to Supabase.
+2. Set the server-side `SUPABASE_URL` variable in the frontend Vercel project to the backend's project URL, such as `https://your-project.supabase.co`. Use the project URL without `/functions/v1/submit-inquiry`, then redeploy the frontend.
 
-| Variable | Value |
-| --- | --- |
-| `AIRTABLE_TOKEN` | A server-side Secret containing a personal access token with `data.records:write` scoped to the enquiry base |
-| `AIRTABLE_BASE_ID` | The Airtable base ID beginning with `app` |
-| `AIRTABLE_TABLE_ID` | The enquiry table ID beginning with `tbl` |
-
-Redeploy after adding the variables. For local API development, use `vercel dev` with a development configuration. The form confirms receipt after Airtable accepts the submission and provides a prefilled email option if online submission is unavailable.
+An existing Vercel deployment can continue using its server-side `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_ID` while `SUPABASE_URL` is unset. With `SUPABASE_URL` set, the Edge Function handles all online enquiries. The form offers a prefilled email option if the backend is unavailable. Use `vercel dev` with a development `SUPABASE_URL` to test the API alongside Vite.
 
 ## Careers
 
