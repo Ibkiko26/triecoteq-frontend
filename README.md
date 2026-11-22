@@ -30,6 +30,20 @@ Vite builds the public pages into `dist/`. The build script copies the existing 
 - `contact.html` — project enquiry
 - `careers.html` — job openings and applications
 
+## Project enquiries
+
+The Contact form posts to `/api/submit-inquiry`. Create or select a private Airtable table with the fields `Name` (single-line text), `Email` (email), `Service` (single-line text), and `Message` (long text).
+
+In the Vercel project’s Production environment variables, add:
+
+| Variable | Value |
+| --- | --- |
+| `AIRTABLE_TOKEN` | A server-side Secret containing a personal access token with `data.records:write` scoped to the enquiry base |
+| `AIRTABLE_BASE_ID` | The Airtable base ID beginning with `app` |
+| `AIRTABLE_TABLE_ID` | The enquiry table ID beginning with `tbl` |
+
+Redeploy after adding the variables. For local API development, use `vercel dev` with a development configuration. The form confirms receipt after Airtable accepts the submission and provides a prefilled email option if online submission is unavailable.
+
 ## Careers
 
 Edit `content/careers.json` to update the department and role menus or publish a confirmed vacancy. Each entry in `openings` needs a unique `id`, a `department` from the department IDs, a `role` from that department’s role list, a `location`, an `employment` label, and a short `description`. Remove closed vacancies from the list and redeploy. An empty list lets applicants register their interest in a role.

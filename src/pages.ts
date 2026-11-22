@@ -425,18 +425,20 @@ function contactPage(): string {
         <div class="container contact-layout">
           <div class="contact-form-wrap">
             <h2>Project enquiry</h2>
-            <form class="contact-form" data-contact-form action="mailto:triecoteq@gmail.com" method="post" enctype="text/plain">
+            <form class="contact-form" data-contact-form action="/api/submit-inquiry" method="post">
               <div class="form-pair">
-                <label>Your name<input name="name" type="text" autocomplete="name" required /></label>
-                <label>Email address<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label>
+                <label>Your name<input name="name" type="text" autocomplete="name" maxlength="120" required /></label>
+                <label>Email address<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com" /></label>
               </div>
               <div class="form-field">
                 <label for="enquiry-service">Service</label>
                 <select id="enquiry-service" name="service"><option value="">Choose a service</option>${serviceOptions}<option>Ready-made plan</option><option>Something else</option></select>
               </div>
-              <label>Project details<textarea name="message" rows="5" data-contact-message required placeholder="Share the project location and what you have in mind."></textarea></label>
-              <button class="button button-dark" type="submit">Prepare enquiry</button>
-              <p class="form-note" data-contact-feedback>This opens your email app with your enquiry ready to send.</p>
+              <label>Project details<textarea name="message" rows="5" data-contact-message maxlength="8000" required placeholder="Share the project location and what you have in mind."></textarea></label>
+              <div hidden><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off" /></label></div>
+              <button class="button button-dark" type="submit">Send enquiry</button>
+              <p class="form-note" role="status" data-contact-feedback></p>
+              <a class="text-link" href="mailto:triecoteq@gmail.com" data-contact-email-fallback hidden>Send by email instead</a>
             </form>
           </div>
           <aside class="contact-aside">

@@ -321,24 +321,70 @@ function prefillContactForm(): void {
 
 function initContactForm(): void {
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
-  const feedback = document.querySelector<HTMLElement>("[data-contact-feedback]");
   if (!form) return;
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const feedback = form.querySelector<HTMLElement>("[data-contact-feedback]")!;
+  const fallback = form.querySelector<HTMLAnchorElement>("[data-contact-email-fallback]")!;
+  const unavailable = "Online enquiries are temporarily unavailable. You can send your enquiry by email instead.";
+  let editedDuringSubmission = false;
 
+  const showEmailFallback = (): void => {
     const values = new FormData(form);
     const name = String(values.get("name") ?? "").trim();
     const email = String(values.get("email") ?? "").trim();
-    const service = String(values.get("service") ?? "New project enquiry");
+    const service = String(values.get("service") ?? "");
     const message = String(values.get("message") ?? "").trim();
     const subject = `Project enquiry${service ? ` — ${service}` : ""}`;
     const body = [`Name: ${name}`, `Email: ${email}`, `Project type: ${service || "Not specified"}`, "", message].join("\n");
-    const mailto = `mailto:triecoteq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-    if (feedback) feedback.textContent = "Your email app should open with the enquiry details ready to send.";
-    window.location.href = mailto;
+    fallback.href = `mailto:triecoteq@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    fallback.hidden = false;
+  };
+
+  form.addEventListener("input", () => {
+    if (button.disabled) {
+      editedDuringSubmission = true;
+    } else if (!fallback.hidden) {
+      showEmailFallback();
+    } else {
+      feedback.textContent = "";
+    }
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (button.disabled || !form.reportValidity()) return;
+
+    const values = Object.fromEntries(new FormData(form));
+    editedDuringSubmission = false;
+    button.disabled = true;
+    button.textContent = "Sending…";
+    feedback.textContent = "Sending your enquiry…";
+    fallback.hidden = true;
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values)
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || result?.success !== true) {
+        feedback.textContent = typeof result?.error === "string" ? result.error : unavailable;
+        if (response.status >= 500 || !result) showEmailFallback();
+        return;
+      }
+
+      if (!editedDuringSubmission) form.reset();
+      feedback.textContent = "Thank you. We’ve received your enquiry.";
+    } catch {
+      feedback.textContent = unavailable;
+      showEmailFallback();
+    } finally {
+      button.disabled = false;
+      button.textContent = "Send enquiry";
+    }
   });
 }
 
