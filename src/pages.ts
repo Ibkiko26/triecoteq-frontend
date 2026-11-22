@@ -173,7 +173,7 @@ function homePage(): string {
         <div class="container home-hero-content">
           <div class="hero-copy">
             <p class="eyebrow"><span class="eyebrow-line"></span> Tri-EcoTeq Architects</p>
-            <h1>Architecture &amp; <br /><em>interior design</em></h1>
+            <h1>Architects and <br /><em>Interior Designers</em></h1>
             <p class="hero-description">We turn your ideas into contemporary homes and spaces that suit the way you live, the site and your budget.</p>
             <div class="button-row">
               <a class="button button-light" href="portfolio.html">Explore our portfolio</a>
