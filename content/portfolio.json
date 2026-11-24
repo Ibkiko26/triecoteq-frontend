@@ -2,13 +2,13 @@
   "portfolioProjects": [
     {
       "id": "portfolio-2024-01",
-      "title": "Portfolio Series 2024-01",
+      "title": "5 Bedroomm Maisonette for Mr & Mrs Jeruto",
       "category": "Residential",
       "location": "Nairobi, Kenya",
       "year": "2024",
       "description": "Contemporary residential concept balancing natural light, privacy, and efficient internal flow.",
       "priceLabel": "",
-      "image": "admin/portfolio-library/IMG-20240131-WA0009.jpg"
+      "image": "admin/portfolio-library/cms-portfolio-2024-01-837861ff-cfb5-4f98-b630-b92fda227433.jpg"
     },
     {
       "id": "portfolio-2024-04",
@@ -81,5 +81,5 @@
       "image": "admin/portfolio-library/IMG-20251031-WA0000.jpg"
     }
   ],
-  "updatedAt": "2026-03-12T00:00:00.000Z"
+  "updatedAt": "2026-11-24T20:47:50.890Z"
 }
