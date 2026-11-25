@@ -146,10 +146,10 @@ function pageHero(title: string, description: string, eyebrow?: string): string 
 function projectCard(project: PortfolioProject, index: number): string {
   return `
     <article class="project-card${index === 0 ? " project-card-featured" : ""}" data-project-card data-category="${escapeHtml(project.category)}" data-year="${escapeHtml(project.year)}">
-      <a class="project-image" href="contact.html?project=${encodeURIComponent(project.title)}" aria-label="Ask about ${escapeHtml(project.title)}">
+      <button class="project-image gallery-trigger" type="button" data-gallery-project="${escapeHtml(project.id)}" aria-label="View images for ${escapeHtml(project.title)}" aria-haspopup="dialog">
         <img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.description || project.title)}" loading="lazy" decoding="async" data-project-image />
-        <span class="project-arrow">${icon("arrow")}</span>
-      </a>
+        <span class="gallery-badge" aria-hidden="true">${project.images.length === 1 ? "View image" : `${project.images.length} images`}</span>
+      </button>
       <div class="project-caption">
         <div><p class="eyebrow">${escapeHtml(project.category)} <span class="caption-dot"></span> ${escapeHtml(project.year)}</p><h3>${escapeHtml(project.title)}</h3></div>
         <p>${escapeHtml(project.location)}</p>
@@ -364,7 +364,10 @@ function portfolioPage(): string {
 function planCard(plan: DesignPlan): string {
   const image = plan.images[0] ?? "";
   const imageMarkup = image
-    ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(plan.title)} architectural plan preview" loading="lazy" />`
+    ? `<button class="gallery-trigger plan-gallery-trigger" type="button" data-gallery-plan="${escapeHtml(plan.id)}" aria-label="View images for ${escapeHtml(plan.title)}" aria-haspopup="dialog">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(plan.title)} architectural plan preview" loading="lazy" decoding="async" />
+        <span class="gallery-badge" aria-hidden="true">${plan.images.length === 1 ? "View image" : `${plan.images.length} images`}</span>
+      </button>`
     : `<span class="plan-image-placeholder" aria-hidden="true">TEQ</span>`;
   const oldPrice = plan.oldPrice && plan.oldPrice > plan.currentPrice
     ? `<del>${formatUsd(plan.oldPrice)}</del>`
@@ -380,7 +383,7 @@ function planCard(plan: DesignPlan): string {
         <div class="plan-title-row"><h2>${escapeHtml(plan.title)}</h2><p class="plan-price">${oldPrice}<strong>${formatUsd(plan.currentPrice)}</strong></p></div>
         <p>${escapeHtml(plan.description)}</p>
         <div class="plan-actions">
-          ${plan.images.length || plan.demoPdf ? `<button type="button" class="plan-demo-button" aria-label="View demo for ${escapeHtml(plan.title)}" data-plan-preview="${escapeHtml(plan.id)}">View demo</button>` : ""}
+          ${plan.images.length || plan.demoPdf ? `<button type="button" class="plan-demo-button" aria-label="View demo for ${escapeHtml(plan.title)}" data-gallery-plan="${escapeHtml(plan.id)}" aria-haspopup="dialog">View demo</button>` : ""}
           <a class="text-link" href="contact.html?plan=${encodeURIComponent(plan.id)}">Ask about this plan</a>
           <button type="button" class="button button-dark button-small" data-add-plan="${escapeHtml(plan.id)}" ${plan.offer ? "disabled" : ""}>${plan.offer ? "Unlock at 3 plans" : "Add to basket"}</button>
         </div>
@@ -397,7 +400,6 @@ function plansPage(): string {
         <div class="container">
           <div class="plans-toolbar"><p>${designPlans.filter((plan) => !plan.offer).length} design packages</p><a class="text-link" href="checkout.html">View basket <span data-cart-count class="inline-count">0</span> <span aria-hidden="true">↗</span></a></div>
           <div class="plan-grid" data-plan-grid>${designPlans.map(planCard).join("")}</div>
-          <dialog class="plan-demo-dialog" aria-labelledby="plan-demo-title" data-plan-demo></dialog>
           <aside class="plans-note"><span class="eyebrow">A note on the drawings</span><p>Every site is different. We recommend confirming local requirements and engaging a local professional before building from any standard plan.</p></aside>
         </div>
       </section>
@@ -524,7 +526,9 @@ const pageTitles: Record<PageName, string> = {
 
 export function renderPage(page: PageName): string {
   document.title = `${pageTitles[page]} | Tri-EcoTeq Architects`;
-  return `${header(page)}${pageRenderers[page]()}${footer(page)}`;
+  const showsGallery = page === "home" || page === "portfolio" || page === "plans";
+  const gallery = showsGallery ? '<dialog class="plan-demo-dialog" aria-labelledby="gallery-title" data-gallery-dialog></dialog>' : "";
+  return `${header(page)}${pageRenderers[page]()}${footer(page)}${gallery}`;
 }
 
 export function refreshProjectListings(): void {

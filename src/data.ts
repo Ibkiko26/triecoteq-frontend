@@ -10,7 +10,10 @@ export interface PortfolioProject {
   description: string;
   priceLabel: string;
   image: string;
+  images: string[];
 }
+
+type PortfolioRecord = Omit<PortfolioProject, "images"> & { images?: string[]; previousIds?: string[] };
 
 export interface DesignPlan {
   id: string;
@@ -25,7 +28,7 @@ export interface DesignPlan {
 
 interface ContentStore {
   getData: () => {
-    portfolioProjects: PortfolioProject[];
+    portfolioProjects: PortfolioRecord[];
     plans: DesignPlan[];
   };
 }
@@ -46,7 +49,7 @@ const portfolioPreviews = new Set(
 export let portfolioProjects: PortfolioProject[] = [];
 export let designPlans: DesignPlan[] = [];
 
-function normalizePortfolioImage(path: string): string {
+function normalizePortfolioImage(path: string, preview = false): string {
   const cleanPath = path.trim().replace(/^\/+/, "");
   const parts = cleanPath.split("/");
   const isProjectMedia = parts.length > 1 && (parts[0] === "assets" || parts[0] === "admin");
@@ -55,7 +58,7 @@ function normalizePortfolioImage(path: string): string {
   }
 
   const filename = parts[parts.length - 1];
-  if (parts.length === 3 && parts[0] === "admin" && parts[1] === "portfolio-library" && portfolioPreviews.has(`${filename}.webp`)) {
+  if (preview && parts.length === 3 && parts[0] === "admin" && parts[1] === "portfolio-library" && portfolioPreviews.has(`${filename}.webp`)) {
     return `/assets/portfolio/previews/${encodeURIComponent(filename)}.webp`;
   }
   if (parts[0] === "assets" && parts[1] === "portfolio" && !availablePortfolioImages.has(filename)) {
@@ -65,11 +68,19 @@ function normalizePortfolioImage(path: string): string {
   return `/${parts.map((part) => encodeURIComponent(part)).join("/")}`;
 }
 
-const publishedPortfolio = portfolioContent.portfolioProjects.map((project) => ({
-  ...project,
-  image: normalizePortfolioImage(project.image)
-}));
-const publishedProjectIds = new Set(publishedPortfolio.map(({ id }) => id));
+function normalizeProject(project: PortfolioRecord): PortfolioProject {
+  const paths = project.images?.filter(Boolean) ?? [];
+  if (!paths.length) paths.push(project.image);
+  return {
+    ...project,
+    image: normalizePortfolioImage(paths[0], true),
+    images: [...new Set(paths.map((path) => normalizePortfolioImage(path)))]
+  };
+}
+
+const portfolioRecords: PortfolioRecord[] = portfolioContent.portfolioProjects;
+const publishedPortfolio = portfolioRecords.map(normalizeProject);
+const publishedProjectIds = new Set(portfolioRecords.flatMap(({ id, previousIds }) => [id, ...(previousIds ?? [])]));
 
 function normalizePlan(plan: DesignPlan): DesignPlan {
   const demoPdf = plan.demoPdf && /^\/assets\/plan-demos\/[a-z0-9_-]+\.pdf$/i.test(plan.demoPdf)
@@ -89,10 +100,7 @@ export function updateContentFromStore(): boolean {
   // Deployments publish these records from Git. Keep local drafts that have no published counterpart.
   portfolioProjects = [
     ...publishedPortfolio,
-    ...data.portfolioProjects.filter(({ id }) => !publishedProjectIds.has(id)).map((project) => ({
-      ...project,
-      image: normalizePortfolioImage(project.image)
-    }))
+    ...data.portfolioProjects.filter(({ id }) => !publishedProjectIds.has(id)).map(normalizeProject)
   ];
   designPlans = [
     ...publishedPlans,

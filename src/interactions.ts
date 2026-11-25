@@ -2,7 +2,7 @@ import { designPlans, portfolioProjects, type DesignPlan } from "./data";
 import { escapeHtml, formatUsd } from "./utils";
 import type { PageName } from "./pages";
 import { initHeroCarousel } from "./hero";
-import { openPlanPreview } from "./plan-preview";
+import { initGalleries } from "./gallery";
 import { submitContactInquiry } from "./contact-api.js";
 
 const cartStorageKey = "teq-buy-plan-cart-v1";
@@ -428,6 +428,7 @@ function initContactForm(): void {
 export function initInteractions(page: PageName): void {
   initTheme();
   initNavigation();
+  initGalleries();
   if (page === "home") initHeroCarousel();
   cart = loadCart();
   updateCartBadges();
@@ -437,8 +438,6 @@ export function initInteractions(page: PageName): void {
     if (!(target instanceof Element)) return;
     const button = target.closest<HTMLButtonElement>("[data-add-plan]");
     if (button) addPlan(button.dataset.addPlan ?? "");
-    const preview = target.closest<HTMLButtonElement>("[data-plan-preview]");
-    if (preview) openPlanPreview(preview.dataset.planPreview ?? "");
   });
 
   document.querySelectorAll<HTMLElement>("[data-checkout-items]").forEach((container) => {

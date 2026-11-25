@@ -764,6 +764,7 @@ body[data-theme="dark"] .button-dark:hover {
 .project-image {
   position: relative;
   display: block;
+  width: 100%;
   overflow: hidden;
   aspect-ratio: 0.9;
   background: var(--paper-deep);
@@ -784,20 +785,39 @@ body[data-theme="dark"] .button-dark:hover {
   transform: scale(1.035);
 }
 
-.project-arrow {
+.gallery-trigger {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.plan-gallery-trigger {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.plan-gallery-trigger:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline-offset: -4px;
+}
+
+.gallery-badge {
   position: absolute;
   right: 1rem;
   bottom: 1rem;
-  display: inline-grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  place-items: center;
+  padding: 0.35rem 0.65rem;
   color: var(--ink);
   background: var(--paper-light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  pointer-events: none;
   transition: color 180ms ease, background 180ms ease;
 }
 
-.project-image:is(:hover, :focus-visible) .project-arrow {
+.gallery-trigger:is(:hover, :focus-visible) .gallery-badge {
   color: var(--paper-light);
   background: var(--ink);
 }
@@ -1282,6 +1302,7 @@ body[data-theme="dark"] .approach-band {
 .plan-index,
 .plan-ribbon {
   position: absolute;
+  pointer-events: none;
   top: 0.8rem;
   padding: 0.45rem 0.6rem;
   color: #fff;
@@ -1415,6 +1436,25 @@ body[data-theme="dark"] .approach-band {
 .plan-demo-controls p, .plan-demo-details p { margin: 0; color: var(--muted); }
 .plan-demo-controls p { white-space: nowrap; font-size: .8rem; }
 .plan-demo-details { display: grid; gap: .85rem; justify-items: start; margin-top: 1rem; }
+
+.gallery-thumbnails {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  padding: .65rem .25rem .25rem;
+}
+
+.gallery-thumbnails button {
+  flex: 0 0 4rem;
+  padding: 2px;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.gallery-thumbnails button[aria-pressed="true"] { border-color: var(--clay); }
+.gallery-thumbnails img { width: 100%; height: 2.6rem; object-fit: cover; }
 
 .plans-note .eyebrow,
 .plans-note p {

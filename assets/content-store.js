@@ -270,6 +270,7 @@
 
   function sanitizePortfolioProject(project, index) {
     var normalized = project || {};
+    var images = sanitizeImages(normalized.images, normalized.image).map(normalizePortfolioImage);
     return {
       id: safeString(normalized.id) || "portfolio-item-" + index,
       title: safeString(normalized.title) || "Untitled Project",
@@ -278,7 +279,8 @@
       year: safeString(normalized.year) || "2026",
       description: safeString(normalized.description),
       priceLabel: safeString(normalized.priceLabel),
-      image: normalizePortfolioImage(safeString(normalized.image))
+      image: images[0] || "",
+      images: images
     };
   }
 
