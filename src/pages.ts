@@ -146,9 +146,9 @@ function pageHero(title: string, description: string, eyebrow?: string): string 
 function projectCard(project: PortfolioProject, index: number): string {
   return `
     <article class="project-card${index === 0 ? " project-card-featured" : ""}" data-project-card data-category="${escapeHtml(project.category)}" data-year="${escapeHtml(project.year)}">
-      <button class="project-image gallery-trigger" type="button" data-gallery-project="${escapeHtml(project.id)}" aria-label="View images for ${escapeHtml(project.title)}" aria-haspopup="dialog">
+      <button class="project-image gallery-trigger" type="button" data-gallery-project="${escapeHtml(project.id)}" aria-label="Open gallery for ${escapeHtml(project.title)}${project.images.length > 1 ? `, ${project.images.length} images` : ""}" aria-haspopup="dialog">
         <img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.description || project.title)}" loading="lazy" decoding="async" data-project-image />
-        <span class="gallery-badge" aria-hidden="true">${project.images.length === 1 ? "View image" : `${project.images.length} images`}</span>
+        <span class="gallery-badge" aria-hidden="true">${project.images.length === 1 ? "Open gallery" : `${project.images.length} images`}</span>
       </button>
       <div class="project-caption">
         <div><p class="eyebrow">${escapeHtml(project.category)} <span class="caption-dot"></span> ${escapeHtml(project.year)}</p><h3>${escapeHtml(project.title)}</h3></div>
@@ -364,9 +364,9 @@ function portfolioPage(): string {
 function planCard(plan: DesignPlan): string {
   const image = plan.images[0] ?? "";
   const imageMarkup = image
-    ? `<button class="gallery-trigger plan-gallery-trigger" type="button" data-gallery-plan="${escapeHtml(plan.id)}" aria-label="View images for ${escapeHtml(plan.title)}" aria-haspopup="dialog">
+    ? `<button class="gallery-trigger plan-gallery-trigger" type="button" data-gallery-plan="${escapeHtml(plan.id)}" aria-label="Open gallery for ${escapeHtml(plan.title)}${plan.images.length > 1 ? `, ${plan.images.length} images` : ""}" aria-haspopup="dialog">
         <img src="${escapeHtml(image)}" alt="${escapeHtml(plan.title)} architectural plan preview" loading="lazy" decoding="async" />
-        <span class="gallery-badge" aria-hidden="true">${plan.images.length === 1 ? "View image" : `${plan.images.length} images`}</span>
+        <span class="gallery-badge" aria-hidden="true">${plan.images.length === 1 ? "Open gallery" : `${plan.images.length} images`}</span>
       </button>`
     : `<span class="plan-image-placeholder" aria-hidden="true">TEQ</span>`;
   const oldPrice = plan.oldPrice && plan.oldPrice > plan.currentPrice
