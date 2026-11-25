@@ -1,14 +1,21 @@
 {
   "portfolioProjects": [
     {
-      "id": "portfolio-2024-01",
+      "id": "teq-dwg0417-2024-04",
       "title": "5 Bedroomm Maisonette for Mr & Mrs Jeruto",
       "category": "Residential",
       "location": "Nairobi, Kenya",
       "year": "2024",
-      "description": "Contemporary residential concept balancing natural light, privacy, and efficient internal flow.",
+      "description": "This is a 5-bedroom Maisonette with a gym and master ensuite at the 2nd floor area, with a modern open kitchen layout, breakfast bar sitting area and a DSQ\nThe interior features modern finishes, well styled interior furniture layout and state of the art workmanship\nWe started implementing it on mid 2023, and handed over in March 2024",
       "priceLabel": "",
-      "image": "admin/portfolio-library/cms-portfolio-2024-01-837861ff-cfb5-4f98-b630-b92fda227433.jpg"
+      "image": "admin/portfolio-library/cms-teq-dwg0417-2024-04-837861ff-cfb5-4f98-b630-b92fda227433.jpg",
+      "images": [
+        "admin/portfolio-library/cms-teq-dwg0417-2024-04-837861ff-cfb5-4f98-b630-b92fda227433.jpg"
+      ],
+      "studioDraftId": "b81ffe1f-7b7b-468b-9f6b-dacaf767a7d9",
+      "previousIds": [
+        "portfolio-2024-01"
+      ]
     },
     {
       "id": "portfolio-2024-04",
@@ -81,5 +88,5 @@
       "image": "admin/portfolio-library/IMG-20251031-WA0000.jpg"
     }
   ],
-  "updatedAt": "2026-11-25T07:33:31.210Z"
+  "updatedAt": "2026-11-25T14:41:04.206Z"
 }
