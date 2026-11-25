@@ -39,6 +39,9 @@ declare global {
 const availablePortfolioImages = new Set(
   Object.keys(import.meta.glob("../assets/portfolio/*")).map((path) => path.split("/").pop())
 );
+const portfolioPreviews = new Set(
+  Object.keys(import.meta.glob("../assets/portfolio/previews/*.webp")).map((path) => path.split("/").pop())
+);
 
 export let portfolioProjects: PortfolioProject[] = [];
 export let designPlans: DesignPlan[] = [];
@@ -52,6 +55,9 @@ function normalizePortfolioImage(path: string): string {
   }
 
   const filename = parts[parts.length - 1];
+  if (parts.length === 3 && parts[0] === "admin" && parts[1] === "portfolio-library" && portfolioPreviews.has(`${filename}.webp`)) {
+    return `/assets/portfolio/previews/${encodeURIComponent(filename)}.webp`;
+  }
   if (parts[0] === "assets" && parts[1] === "portfolio" && !availablePortfolioImages.has(filename)) {
     return "/assets/hero/Proj%202.jpg";
   }
@@ -142,25 +148,25 @@ export const team = [
     name: "Braxton Muma",
     role: "Founder",
     focus: "Architectural, mechanical, and electrical planning.",
-    image: "/assets/team/Braxton%20Muma.png"
+    image: "/assets/team/braxton-muma.webp"
   },
   {
     name: "Ibrahim Kiprotich",
     role: "Co-founder",
     focus: "3D architectural modelling and visualization.",
-    image: "/assets/team/Ibrahim%20Koros.jpg"
+    image: "/assets/team/ibrahim-kiprotich.webp"
   },
   {
     name: "Wilfred Omondi",
     role: "Co-founder",
     focus: "Architectural design and structural planning.",
-    image: "/assets/team/Wilfred%20Omondi.png"
+    image: "/assets/team/wilfred-omondi.webp"
   },
   {
     name: "Joseph Mbugua",
     role: "Architectural planner",
     focus: "Architectural planning, interior design and project documentation.",
-    image: "/assets/team/Joseph%20Mbugua.jpg"
+    image: "/assets/team/joseph-mbugua.webp"
   }
 ];
 

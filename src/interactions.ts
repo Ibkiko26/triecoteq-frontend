@@ -79,22 +79,32 @@ function initNavigation(): void {
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
   const navigation = document.querySelector<HTMLElement>("#primary-navigation");
   if (!toggle || !navigation) return;
+  const header = toggle.closest(".site-header");
+  const mobile = window.matchMedia("(max-width: 900px)");
+  const isExpanded = () => toggle.getAttribute("aria-expanded") === "true";
+  const setExpanded = (expanded: boolean) => {
+    toggle.setAttribute("aria-expanded", String(expanded));
+    navigation.classList.toggle("is-open", expanded);
+  };
 
-  toggle.addEventListener("click", () => {
-    const expanded = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!expanded));
-    navigation.classList.toggle("is-open", !expanded);
-    toggle.innerHTML = `<span class="sr-only">${expanded ? "Open" : "Close"} navigation</span>${expanded
-      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>'
-      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>'}`;
+  toggle.addEventListener("click", () => setExpanded(!isExpanded()));
+  navigation.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("a")) setExpanded(false);
   });
-
-  navigation.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      toggle.setAttribute("aria-expanded", "false");
-      navigation.classList.remove("is-open");
-    });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !isExpanded()) return;
+    setExpanded(false);
+    toggle.focus();
   });
+  document.addEventListener("pointerdown", (event) => {
+    if (isExpanded() && event.target instanceof Node && !header?.contains(event.target)) setExpanded(false);
+  });
+  document.addEventListener("focusin", (event) => {
+    if (isExpanded() && event.target instanceof Node && event.target !== toggle && !navigation.contains(event.target)) {
+      setExpanded(false);
+    }
+  });
+  mobile.addEventListener("change", () => setExpanded(false));
 }
 
 function loadCart(): Map<string, CartEntry> {
@@ -329,7 +339,30 @@ function initContactForm(): void {
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const feedback = form.querySelector<HTMLElement>("[data-contact-feedback]")!;
   const fallback = form.querySelector<HTMLAnchorElement>("[data-contact-email-fallback]")!;
+  const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-required-message]"));
   let editedDuringSubmission = false;
+  form.noValidate = true;
+
+  function updateFeedback(state: "pending" | "error" | "success" | "", message = ""): void {
+    feedback.dataset.state = state;
+    feedback.textContent = message;
+  }
+
+  function validateField(field: HTMLInputElement | HTMLTextAreaElement): boolean {
+    const error = document.getElementById(`${field.id}-error`)!;
+    let message = "";
+    if (!field.value.trim()) {
+      message = field.dataset.requiredMessage!;
+    } else if (!field.validity.valid) {
+      message = field.type === "email" ? "Enter a valid email address, such as name@example.com." : field.validationMessage;
+    }
+
+    error.textContent = message;
+    error.hidden = !message;
+    if (message) field.setAttribute("aria-invalid", "true");
+    else field.removeAttribute("aria-invalid");
+    return !message;
+  }
 
   const showEmailFallback = (): void => {
     const values = new FormData(form);
@@ -344,37 +377,47 @@ function initContactForm(): void {
     fallback.hidden = false;
   };
 
-  form.addEventListener("input", () => {
+  form.addEventListener("input", (event) => {
+    const field = event.target as HTMLInputElement | HTMLTextAreaElement;
+    if (fields.includes(field) && field.hasAttribute("aria-invalid")) validateField(field);
     if (button.disabled) {
       editedDuringSubmission = true;
     } else if (!fallback.hidden) {
       showEmailFallback();
     } else {
-      feedback.textContent = "";
+      updateFeedback("");
     }
   });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (button.disabled || !form.reportValidity()) return;
+    if (button.disabled) return;
+
+    const invalidFields = fields.filter((field) => !validateField(field));
+    if (invalidFields.length) {
+      fallback.hidden = true;
+      updateFeedback("");
+      invalidFields[0].focus();
+      return;
+    }
 
     const values = new FormData(form);
     editedDuringSubmission = false;
     button.disabled = true;
     button.textContent = "Sending…";
-    feedback.textContent = "Sending your enquiry…";
+    updateFeedback("pending", "Sending your enquiry…");
     fallback.hidden = true;
 
     try {
       const result = await submitContactInquiry(form.action, values);
       if (!result.accepted) {
-        feedback.textContent = result.error;
+        updateFeedback("error", result.error);
         if (result.offerEmail) showEmailFallback();
         return;
       }
 
       if (!editedDuringSubmission) form.reset();
-      feedback.textContent = "Thank you. We’ve received your enquiry.";
+      updateFeedback("success", "Thank you. We’ve received your enquiry.");
     } finally {
       button.disabled = false;
       button.textContent = "Send enquiry";

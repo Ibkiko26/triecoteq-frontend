@@ -14,6 +14,8 @@ export function initHeroCarousel(): void {
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let current = 0;
+  let requested = current;
+  let requestVersion = 0;
   let userPaused = reducedMotion.matches;
   let controlsHovered = false;
   let inView = true;
@@ -29,7 +31,7 @@ export function initHeroCarousel(): void {
   }
 
   function updatePlayback(): void {
-    const paused = userPaused || controlsHovered || !inView || document.hidden;
+    const paused = userPaused || controlsHovered || !inView || document.hidden || requested !== current;
     hero!.classList.toggle("is-paused", paused);
     pauseButton!.setAttribute("aria-label", userPaused ? "Play slideshow" : "Pause slideshow");
     pauseButton!.setAttribute("aria-pressed", String(userPaused));
@@ -48,18 +50,44 @@ export function initHeroCarousel(): void {
     }
   }
 
-  function showSlide(index: number, manual = false): void {
+  async function showSlide(index: number, manual = false): Promise<void> {
     const next = (index + slides.length) % slides.length;
-    if (next === current) return;
+    if (next === requested) return;
 
     stopTimer();
     remaining = slideDuration;
+    requested = next;
+    const version = ++requestVersion;
+    if (next === current) {
+      updatePlayback();
+      return;
+    }
+    updatePlayback();
+
+    const slide = slides[next];
+    const template = slide.querySelector<HTMLTemplateElement>("template");
+    if (template && !slide.querySelector("img")) slide.append(template.content.cloneNode(true));
+    const image = slide.querySelector("img")!;
+    try {
+      await image.decode();
+    } catch {
+      if (template) image.remove();
+      if (version !== requestVersion) return;
+      requested = current;
+      if (manual && status) status.textContent = "This showcase image could not load. Choose another image to continue.";
+      updatePlayback();
+      return;
+    }
+    if (version !== requestVersion) return;
+
     const outgoing = slides[current];
     current = next;
 
     slides.forEach((slide, slideIndex) => {
-      slide.classList.toggle("is-active", slideIndex === current);
-      if (slideIndex === current) slide.classList.add("is-zooming");
+      const active = slideIndex === current;
+      slide.classList.toggle("is-active", active);
+      slide.setAttribute("aria-hidden", String(!active));
+      if (active) slide.classList.add("is-zooming");
     });
     // Keep the outgoing image moving until its crossfade has finished.
     window.setTimeout(() => {
@@ -78,8 +106,8 @@ export function initHeroCarousel(): void {
     updatePlayback();
   }
 
-  hero.querySelector("[data-hero-previous]")?.addEventListener("click", () => showSlide(current - 1, true));
-  hero.querySelector("[data-hero-next]")?.addEventListener("click", () => showSlide(current + 1, true));
+  hero.querySelector("[data-hero-previous]")?.addEventListener("click", () => showSlide(requested - 1, true));
+  hero.querySelector("[data-hero-next]")?.addEventListener("click", () => showSlide(requested + 1, true));
   selectors.forEach((selector, index) => selector.addEventListener("click", () => showSlide(index, true)));
 
   pauseButton.addEventListener("click", () => {
@@ -97,7 +125,7 @@ export function initHeroCarousel(): void {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
-    showSlide(current + (event.key === "ArrowRight" ? 1 : -1), true);
+    showSlide(requested + (event.key === "ArrowRight" ? 1 : -1), true);
   });
 
   const controls = hero.querySelector<HTMLElement>(".hero-slideshow-controls");
@@ -127,7 +155,7 @@ export function initHeroCarousel(): void {
     if (now - lastWheelChange < 1000) return;
     wheelTotal += horizontal * (event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? hero!.clientWidth : 1);
     if (Math.abs(wheelTotal) < 45) return;
-    showSlide(current + Math.sign(wheelTotal), true);
+    showSlide(requested + Math.sign(wheelTotal), true);
     lastWheelChange = now;
     wheelTotal = 0;
   }, { passive: false });
@@ -144,11 +172,13 @@ export function initHeroCarousel(): void {
     const dy = event.clientY - gesture.y;
     gesture = undefined;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      showSlide(current + (dx < 0 ? 1 : -1), true);
+      showSlide(requested + (dx < 0 ? 1 : -1), true);
     }
   });
   hero.addEventListener("pointercancel", () => { gesture = undefined; });
-  hero.querySelectorAll("img").forEach((image) => image.addEventListener("dragstart", (event) => event.preventDefault()));
+  hero.addEventListener("dragstart", (event) => {
+    if (event.target instanceof HTMLImageElement) event.preventDefault();
+  });
 
   document.addEventListener("visibilitychange", updatePlayback);
   reducedMotion.addEventListener("change", () => {

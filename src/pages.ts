@@ -1,18 +1,18 @@
 import { clientFeedback, designPlans, portfolioProjects, services, team, type DesignPlan, type PortfolioProject } from "./data";
 import { renderCareersSections } from "./careers";
 import { escapeHtml, formatUsd } from "./utils";
+import firstHeroImage from "../assets/hero/Mod1.webp?url";
 
 export type PageName = "home" | "about" | "services" | "portfolio" | "careers" | "contact" | "plans" | "checkout";
 
 const navigation: Array<{ label: string; href: string; page: PageName }> = [
-  { label: "Home", href: "index.html", page: "home" },
   { label: "About", href: "about.html", page: "about" },
   { label: "Services", href: "services.html", page: "services" },
   { label: "Portfolio", href: "portfolio.html", page: "portfolio" },
-  { label: "Ready-made plans", href: "buy-plan.html", page: "plans" },
-  { label: "Careers", href: "careers.html", page: "careers" },
-  { label: "Contact", href: "contact.html", page: "contact" }
+  { label: "Ready-made plans", href: "buy-plan.html", page: "plans" }
 ];
+
+const wordmarkImage = "/assets/brand/wordmark.webp";
 
 // The Facebook and Pinterest marks are from Bootstrap Icons (MIT).
 const socialLinks = [
@@ -71,25 +71,26 @@ function header(page: PageName): string {
         </div>
       </div>
       <div class="container nav-shell">
-        <a class="wordmark" href="index.html" aria-label="Tri-EcoTeq Architects home">
-          <img src="/assets/brand/Tri-EcoTeq%20Architects%20Logo.png" alt="" width="42" height="42" />
+        <a class="wordmark" href="index.html" aria-label="Tri-EcoTeq Architects home"${page === "home" ? ' aria-current="page"' : ""}>
+          <img src="${wordmarkImage}" alt="" width="42" height="42" />
           <span>Tri-EcoTeq <small>Architects</small></span>
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle>
-          <span class="sr-only">Open navigation</span>${icon("menu")}
+          Menu <span class="nav-toggle-open">${icon("menu")}</span><span class="nav-toggle-close">${icon("close")}</span>
         </button>
         <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation">
           ${links}
-          <a class="nav-cart" href="checkout.html" aria-label="Open basket">
+          <a class="nav-cart" href="checkout.html"${page === "checkout" ? ' aria-current="page"' : ""}>
             Basket <span class="cart-count" data-cart-count>0</span>
           </a>
           <button class="theme-button" type="button" data-theme-toggle aria-label="Use dark theme" title="Toggle color theme">${icon("moon")}</button>
+          <a class="button button-dark nav-cta" href="contact.html"${page === "contact" ? ' aria-current="page"' : ""}>Discuss your project ${icon("arrow")}</a>
         </nav>
       </div>
     </header>`;
 }
 
-function footer(): string {
+function footer(page: PageName): string {
   const socialIcons = socialLinks.map(({ label, href, viewBox, mark }) => `
     <a href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${label} (opens in a new tab)" title="${label}">
       <svg viewBox="${viewBox}" fill="currentColor" aria-hidden="true">${mark}</svg>
@@ -101,17 +102,23 @@ function footer(): string {
       <div class="container footer-main">
         <div class="footer-intro">
           <a class="wordmark wordmark-footer" href="index.html">
-            <img src="/assets/brand/Tri-EcoTeq%20Architects%20Logo.png" alt="" width="42" height="42" />
+            <img src="${wordmarkImage}" alt="" width="42" height="42" loading="lazy" decoding="async" />
             <span>Tri-EcoTeq <small>Architects</small></span>
           </a>
           <p>Architecture, interiors and engineering for projects in Nairobi and beyond.</p>
         </div>
+        <nav aria-label="Studio links">
+          <p class="footer-label">The practice</p>
+          <a class="footer-link" href="about.html"${page === "about" ? ' aria-current="page"' : ""}>About the studio</a>
+          <a class="footer-link" href="careers.html"${page === "careers" ? ' aria-current="page"' : ""}>Careers</a>
+          <a class="footer-link" href="contact.html"${page === "contact" ? ' aria-current="page"' : ""}>Contact</a>
+        </nav>
         <div>
           <p class="footer-label">Find us</p>
           <address>WoodVale Avenue, Westlands<br />Nairobi, Kenya</address>
           <a class="footer-link" href="https://maps.google.com/?q=WoodVale+Avenue+Westlands+Nairobi" target="_blank" rel="noopener noreferrer">Get directions ↗</a>
         </div>
-        <div>
+        <div class="footer-contact">
           <p class="footer-label">Say hello</p>
           <a class="footer-link" href="tel:+254728240363">+254 728 240 363</a>
           <a class="footer-link" href="mailto:triecoteq@gmail.com">triecoteq@gmail.com</a>
@@ -140,8 +147,7 @@ function projectCard(project: PortfolioProject, index: number): string {
   return `
     <article class="project-card${index === 0 ? " project-card-featured" : ""}" data-project-card data-category="${escapeHtml(project.category)}" data-year="${escapeHtml(project.year)}">
       <a class="project-image" href="contact.html?project=${encodeURIComponent(project.title)}" aria-label="Ask about ${escapeHtml(project.title)}">
-        <img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.title)}" loading="lazy" data-project-image />
-        <span class="project-index">${String(index + 1).padStart(2, "0")}</span>
+        <img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.description || project.title)}" loading="lazy" decoding="async" data-project-image />
         <span class="project-arrow">${icon("arrow")}</span>
       </a>
       <div class="project-caption">
@@ -153,21 +159,22 @@ function projectCard(project: PortfolioProject, index: number): string {
 
 function homePage(): string {
   const featured = portfolioProjects.slice(0, 3).map(projectCard).join("");
+  const feedback = clientFeedback.find(({ name }) => name === "Angela C.");
   const slides = [
-    { image: "Mod1", title: "Residential architecture", description: "Contemporary residence with a landscaped garden and swimming pool", position: "center 58%" },
-    { image: "Mod9", title: "Spaces to gather", description: "Warm family lounge opening onto a garden terrace", position: "center" },
-    { image: "Mod8", title: "Room to retreat", description: "Bedroom suite with timber finishes and views into the garden", position: "center" },
-    { image: "Mod7", title: "Details that make a difference", description: "Marble bathroom with a freestanding bath and softly illuminated mirrors", position: "center" },
-    { image: "Mod2", title: "Connected living", description: "Double-height living space with a floating staircase and pool views", position: "center" }
+    { image: firstHeroImage, title: "Residential architecture", description: "Contemporary residence with a landscaped garden and swimming pool" },
+    { image: "/assets/hero/Mod9.webp", title: "Spaces to gather", description: "Warm family lounge opening onto a garden terrace" },
+    { image: "/assets/hero/Mod8.webp", title: "Room to retreat", description: "Bedroom suite with timber finishes and views into the garden" },
+    { image: "/assets/hero/Mod7.webp", title: "Details that make a difference", description: "Marble bathroom with a freestanding bath and softly illuminated mirrors" },
+    { image: "/assets/hero/Mod2.webp", title: "Connected living", description: "Double-height living space with a floating staircase and pool views" }
   ];
 
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="home-hero" aria-label="Tri-EcoTeq Architects showcase" aria-roledescription="carousel" data-hero-carousel>
-        <div class="hero-backdrop" aria-hidden="true">
+        <div class="hero-backdrop">
           ${slides.map((slide, index) => `
-            <div class="hero-slide${index === 0 ? " is-active is-zooming" : ""}" data-hero-slide data-title="${slide.title}">
-              <img src="/assets/hero/${slide.image}.jpg" alt="${slide.description}" style="object-position: ${slide.position}" fetchpriority="${index === 0 ? "high" : "low"}" decoding="async" />
+            <div class="hero-slide${index === 0 ? " is-active is-zooming" : ""}" data-hero-slide data-title="${slide.title}" aria-hidden="${index !== 0}">
+              ${index === 0 ? `<img src="${slide.image}" alt="${slide.description}" fetchpriority="high" decoding="async" />` : `<template><img src="${slide.image}" alt="${slide.description}" decoding="async" /></template>`}
             </div>
           `).join("")}
         </div>
@@ -178,8 +185,8 @@ function homePage(): string {
             <h1>Architects and <br /><em>Interior Designers</em></h1>
             <p class="hero-description">We turn your ideas into contemporary homes and spaces that suit the way you live, the site and your budget.</p>
             <div class="button-row">
-              <a class="button button-light" href="portfolio.html">Explore our portfolio</a>
-              <a class="text-link" href="contact.html">Discuss your project</a>
+              <a class="button button-light" href="contact.html">Discuss your project ${icon("arrow")}</a>
+              <a class="button button-outline" href="portfolio.html">View selected work</a>
             </div>
           </div>
         </div>
@@ -225,10 +232,18 @@ function homePage(): string {
       </section>
 
       <section class="section section-contact-cta">
-        <div class="container contact-cta">
-          <h2>Planning a home?</h2>
-          <p>Tell us what you have in mind and we’ll help you work out where to start.</p>
-          <a class="button button-light" href="contact.html">Get in touch</a>
+        <div class="container contact-cta-layout">
+          ${feedback ? `<article class="home-feedback" aria-labelledby="home-feedback-title">
+            <h2 class="eyebrow" id="home-feedback-title">Client feedback</h2>
+            <p class="home-feedback-summary">${escapeHtml(feedback.summary)}</p>
+            <p class="home-feedback-name">${escapeHtml(feedback.name)}</p>
+            <a class="text-link" href="about.html#client-feedback">Read more client feedback ${icon("arrow")}</a>
+          </article>` : ""}
+          <div class="contact-cta">
+            <h2>Planning a project?</h2>
+            <p>Tell us what you have in mind and we’ll help you work out where to start.</p>
+            <a class="button button-light" href="contact.html">Discuss your project ${icon("arrow")}</a>
+          </div>
         </div>
       </section>
     </main>`;
@@ -237,7 +252,7 @@ function homePage(): string {
 function aboutPage(): string {
   const teamCards = team.map((member) => `
     <article class="team-card">
-      <div class="team-photo"><img src="${member.image}" alt="${escapeHtml(member.name)}" loading="lazy" /></div>
+      <div class="team-photo"><img src="${member.image}" alt="Portrait of ${escapeHtml(member.name)}" loading="lazy" decoding="async" /></div>
       <div class="team-caption"><span class="eyebrow">${escapeHtml(member.role)}</span><h3>${escapeHtml(member.name)}</h3><p>${escapeHtml(member.focus)}</p></div>
     </article>`).join("");
   const feedbackItems = clientFeedback.map(({ name, summary }) => `
@@ -245,7 +260,7 @@ function aboutPage(): string {
   `).join("");
 
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("About <em>Tri-EcoTeq</em>", "We are a Nairobi-based practice bringing architecture, interior design and engineering together to meet the needs of each client.")}
       <section class="section section-story">
         <div class="container story-grid">
@@ -270,7 +285,7 @@ function aboutPage(): string {
           <div class="team-grid">${teamCards}</div>
         </div>
       </section>
-      <section class="section section-feedback">
+      <section class="section section-feedback" id="client-feedback">
         <div class="container">
           <div class="section-heading"><h2>Client feedback</h2><p>Summarised from testimonials shared on our original website.</p></div>
           <ul class="feedback-grid">${feedbackItems}</ul>
@@ -288,7 +303,7 @@ function servicesPage(): string {
     </article>`).join("");
 
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("Design <em>services</em>", "From early concepts to construction drawings, we bring the disciplines your project needs into one coordinated design process.")}
       <section class="section section-services">
         <div class="container">
@@ -312,7 +327,7 @@ function portfolioPage(): string {
   const archiveProject = "Proposed three-bedroom home";
 
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("<em>Portfolio</em>", "Explore residential, interior and commercial work alongside hospitality, institutional and civic projects. The portfolio includes design proposals, studies and completed work.")}
       <section class="section section-portfolio">
         <div class="container">
@@ -376,7 +391,7 @@ function planCard(plan: DesignPlan): string {
 
 function plansPage(): string {
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("A good plan is<br /><em>a good place to start.</em>", "Explore completed residential design packages with coordinated architectural and structural drawings, ready to make your own.", "Ready-made collection")}
       <section class="section section-plans">
         <div class="container">
@@ -391,7 +406,7 @@ function plansPage(): string {
 
 function checkoutPage(): string {
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("The next step<br /><em>starts here.</em>", "Review your selected plans and tell us how you would like to continue.", "Your selection")}
       <section class="section section-checkout">
         <div class="container checkout-layout">
@@ -424,22 +439,35 @@ function contactPage(): string {
   const serviceOptions = services.map(({ title }) => `<option>${escapeHtml(title)}</option>`).join("");
 
   return `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("Contact <em>us</em>", "Tell us about a project, ask about our services or call to arrange a visit to our Nairobi studio.")}
       <section class="section section-contact">
         <div class="container contact-layout">
           <div class="contact-form-wrap">
             <h2>Project enquiry</h2>
-            <form class="contact-form" data-contact-form action="/api/submit-inquiry" method="post">
+            <form class="contact-form enquiry-form" data-contact-form action="/api/submit-inquiry" method="post">
               <div class="form-pair">
-                <label>Your name<input name="name" type="text" autocomplete="name" maxlength="120" required /></label>
-                <label>Email address<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com" /></label>
+                <div class="form-field">
+                  <label for="enquiry-name">Your name</label>
+                  <input id="enquiry-name" name="name" type="text" autocomplete="name" maxlength="120" aria-describedby="enquiry-name-error" data-required-message="Enter your name." required />
+                  <p class="field-error" id="enquiry-name-error" hidden></p>
+                </div>
+                <div class="form-field">
+                  <label for="enquiry-email">Email address</label>
+                  <input id="enquiry-email" name="email" type="email" autocomplete="email" maxlength="254" pattern="[^\\s@]+@[^\\s@]+\\.[^\\s@]+" aria-describedby="enquiry-email-error" data-required-message="Enter your email address." required />
+                  <p class="field-error" id="enquiry-email-error" hidden></p>
+                </div>
               </div>
               <div class="form-field">
-                <label for="enquiry-service">Service</label>
+                <label for="enquiry-service">Service <span class="field-optional">(optional)</span></label>
                 <select id="enquiry-service" name="service"><option value="">Choose a service</option>${serviceOptions}<option>Ready-made plan</option><option>Something else</option></select>
               </div>
-              <label>Project details<textarea name="message" rows="5" data-contact-message maxlength="8000" required placeholder="Share the project location and what you have in mind."></textarea></label>
+              <div class="form-field">
+                <label for="enquiry-message">Project details</label>
+                <p class="field-hint" id="enquiry-message-hint">Share the project location and what you have in mind.</p>
+                <textarea id="enquiry-message" name="message" rows="5" data-contact-message maxlength="8000" aria-describedby="enquiry-message-hint enquiry-message-error" data-required-message="Tell us a little about your project." required></textarea>
+                <p class="field-error" id="enquiry-message-error" hidden></p>
+              </div>
               <div hidden><label>Leave this empty<input name="website" type="text" tabindex="-1" autocomplete="off" /></label></div>
               <button class="button button-dark" type="submit">Send enquiry</button>
               <p class="form-note" role="status" data-contact-feedback></p>
@@ -474,7 +502,7 @@ const pageRenderers: Record<PageName, () => string> = {
   services: servicesPage,
   portfolio: portfolioPage,
   careers: () => `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       ${pageHero("<em>Careers</em>", "Explore opportunities across architecture, interior design, engineering and construction at our Nairobi practice.")}
       ${renderCareersSections()}
     </main>`,
@@ -496,7 +524,7 @@ const pageTitles: Record<PageName, string> = {
 
 export function renderPage(page: PageName): string {
   document.title = `${pageTitles[page]} | Tri-EcoTeq Architects`;
-  return `${header(page)}${pageRenderers[page]()}${footer()}`;
+  return `${header(page)}${pageRenderers[page]()}${footer(page)}`;
 }
 
 export function refreshProjectListings(): void {
