@@ -2,7 +2,22 @@ import { designPlans, portfolioProjects } from "./data";
 import { escapeHtml } from "./utils";
 
 const triggerSelector = "[data-gallery-project], [data-gallery-plan]";
+const previewSelector = "[data-gallery-preview]";
 const slideDelay = 1800;
+
+interface CardPreview {
+  card: HTMLElement;
+  image: HTMLImageElement;
+  images: string[];
+  title: string;
+  cover: string;
+  coverAlt: string;
+  status: HTMLElement;
+  index: number;
+  requested: number;
+  version: number;
+  manual: boolean;
+}
 
 function galleryFor(trigger: HTMLButtonElement) {
   const project = portfolioProjects.find(({ id }) => id === trigger.dataset.galleryProject);
@@ -15,62 +30,123 @@ function triggerFrom(target: EventTarget | null): HTMLButtonElement | null {
   return target instanceof Element ? target.closest<HTMLButtonElement>(triggerSelector) : null;
 }
 
+function previewFrom(target: EventTarget | null): HTMLElement | null {
+  return target instanceof Element ? target.closest<HTMLElement>(previewSelector) : null;
+}
+
 export function initGalleries(): void {
   const dialog = document.querySelector<HTMLDialogElement>("[data-gallery-dialog]");
   if (!dialog) return;
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let preview: { button: HTMLButtonElement; image: HTMLImageElement; cover: string; index: number; timer?: number } | undefined;
+  const previews = new WeakMap<HTMLElement, CardPreview>();
+  let hovered: CardPreview | undefined;
+  let timer: number | undefined;
   let opener: HTMLButtonElement | undefined;
 
-  function stopPreview(): void {
-    if (!preview) return;
-    window.clearTimeout(preview.timer);
-    preview.image.src = preview.cover;
-    preview = undefined;
+  function previewFor(card: HTMLElement): CardPreview | undefined {
+    const existing = previews.get(card);
+    if (existing) return existing;
+    const trigger = card.querySelector<HTMLButtonElement>(triggerSelector);
+    const gallery = trigger && galleryFor(trigger);
+    const image = trigger?.querySelector("img");
+    const status = card.querySelector<HTMLElement>("[data-preview-status]");
+    if (!gallery || gallery.images.length < 2 || !image || !status) return;
+    const state: CardPreview = {
+      card, image, status, images: gallery.images, title: gallery.title,
+      cover: image.getAttribute("src") || image.src, coverAlt: image.alt,
+      index: 0, requested: 0, version: 0, manual: false
+    };
+    previews.set(card, state);
+    return state;
+  }
+
+  function displayImage(state: CardPreview, index: number, src: string): void {
+    state.index = index;
+    state.image.src = src;
+    state.image.alt = index === 0 ? state.coverAlt : `${state.title}, image ${index + 1}`;
+  }
+
+  function stopHover(): void {
+    window.clearTimeout(timer);
+    const state = hovered;
+    hovered = undefined;
+    if (!state) return;
+    state.version++;
+    state.requested = state.manual ? state.index : 0;
+    if (!state.manual && state.index !== 0) displayImage(state, 0, state.cover);
+  }
+
+  async function advance(state: CardPreview, direction: number): Promise<void> {
+    const index = (state.requested + direction + state.images.length) % state.images.length;
+    const version = ++state.version;
+    state.requested = index;
+    const src = index === 0 ? state.cover : state.images[index];
+    const next = new Image();
+    next.src = src;
+    const loaded = await next.decode().then(() => true, () => false);
+    if (version !== state.version || !state.card.isConnected) return;
+    if (loaded) {
+      displayImage(state, index, src);
+      if (state.manual) state.status.textContent = `${state.title}, image ${index + 1} of ${state.images.length}`;
+    } else if (state.manual) {
+      state.status.textContent = "This image could not load. Try another image.";
+    }
+  }
+
+  function stepCard(card: HTMLElement, direction: number): void {
+    const state = previewFor(card);
+    if (!state) return;
+    state.manual = true;
+    if (hovered === state) stopHover();
+    void advance(state, direction);
   }
 
   document.addEventListener("pointerover", (event) => {
     if (event.pointerType !== "mouse" || reduceMotion.matches || dialog.open) return;
-    const button = triggerFrom(event.target);
-    if (!button || button === preview?.button || !button.classList.contains("gallery-trigger")) return;
-    stopPreview();
-    const gallery = galleryFor(button);
-    const image = button.querySelector("img");
-    if (!image || !gallery || gallery.images.length < 2) return;
-
-    const state = { button, image, cover: image.getAttribute("src") || image.src, index: 0, timer: 0 };
-    preview = state;
-    let candidate = 0;
-    const advance = async () => {
-      if (preview !== state || !button.isConnected || !button.matches(":hover")) return;
-      candidate = (candidate + 1) % gallery.images.length;
-      const next = new Image();
-      next.src = candidate === 0 ? state.cover : gallery.images[candidate];
-      const loaded = await next.decode().then(() => true, () => false);
-      if (preview !== state) return;
-      if (loaded) {
-        state.image.src = next.src;
-        state.index = candidate;
-      }
-      state.timer = window.setTimeout(advance, slideDelay);
+    const card = previewFrom(event.target);
+    if (!card || card === hovered?.card) return;
+    stopHover();
+    const state = previewFor(card);
+    if (!state || state.manual) return;
+    hovered = state;
+    const rotate = async () => {
+      if (hovered !== state || !card.isConnected || !card.matches(":hover")) return;
+      await advance(state, 1);
+      if (hovered === state) timer = window.setTimeout(rotate, slideDelay);
     };
-    state.timer = window.setTimeout(advance, slideDelay);
+    timer = window.setTimeout(rotate, slideDelay);
   });
 
   document.addEventListener("pointerout", (event) => {
-    if (preview && triggerFrom(event.target) === preview.button && triggerFrom(event.relatedTarget) !== preview.button) stopPreview();
+    if (hovered && previewFrom(event.target) === hovered.card && previewFrom(event.relatedTarget) !== hovered.card) stopHover();
   });
-  reduceMotion.addEventListener("change", stopPreview);
-  document.addEventListener("visibilitychange", stopPreview);
+  reduceMotion.addEventListener("change", stopHover);
+  document.addEventListener("visibilitychange", stopHover);
+
+  document.addEventListener("keydown", (event) => {
+    if (dialog.open || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    const card = previewFrom(event.target);
+    if (!card?.querySelector("[data-preview-step]")) return;
+    event.preventDefault();
+    stepCard(card, event.key === "ArrowLeft" ? -1 : 1);
+  });
 
   document.addEventListener("click", (event) => {
+    if (dialog.open || !(event.target instanceof Element)) return;
+    const card = previewFrom(event.target);
+    const arrow = event.target.closest<HTMLButtonElement>("[data-preview-step]");
+    if (card && arrow) {
+      stepCard(card, Number(arrow.dataset.previewStep));
+      return;
+    }
     const trigger = triggerFrom(event.target);
-    if (!trigger || dialog.open) return;
+    if (!trigger) return;
     const gallery = galleryFor(trigger);
     if (!gallery || (!gallery.images.length && !gallery.demoPdf)) return;
-    const index = preview?.button === trigger ? preview.index : 0;
-    stopPreview();
+    const index = card ? previews.get(card)?.index ?? 0 : 0;
+    stopHover();
     opener = trigger;
     showGallery(dialog, gallery, index);
   });

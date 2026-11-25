@@ -143,13 +143,26 @@ function pageHero(title: string, description: string, eyebrow?: string): string 
     </section>`;
 }
 
+function cardGallery(
+  kind: "project" | "plan", { id, title, images }: Pick<PortfolioProject, "id" | "title" | "images">, cover: string, alt: string
+): string {
+  const count = images.length;
+  const name = escapeHtml(title);
+  return `
+    <button class="gallery-trigger" type="button" data-gallery-${kind}="${escapeHtml(id)}" aria-label="Open gallery for ${name}${count > 1 ? `, ${count} images` : ""}" aria-haspopup="dialog">
+      <img src="${escapeHtml(cover)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async"${kind === "project" ? " data-project-image" : ""} />
+      <span class="gallery-badge" aria-hidden="true">${count > 1 ? `${count} images` : "Open gallery"}</span>
+    </button>
+    ${count > 1 ? `
+      <button class="gallery-preview-arrow" type="button" data-preview-step="-1" aria-label="Previous image for ${name}">${icon("arrow")}</button>
+      <button class="gallery-preview-arrow" type="button" data-preview-step="1" aria-label="Next image for ${name}">${icon("arrow")}</button>
+      <span class="sr-only" role="status" data-preview-status></span>` : ""}`;
+}
+
 function projectCard(project: PortfolioProject, index: number): string {
   return `
     <article class="project-card${index === 0 ? " project-card-featured" : ""}" data-project-card data-category="${escapeHtml(project.category)}" data-year="${escapeHtml(project.year)}">
-      <button class="project-image gallery-trigger" type="button" data-gallery-project="${escapeHtml(project.id)}" aria-label="Open gallery for ${escapeHtml(project.title)}${project.images.length > 1 ? `, ${project.images.length} images` : ""}" aria-haspopup="dialog">
-        <img src="${escapeHtml(project.image)}" alt="${escapeHtml(project.description || project.title)}" loading="lazy" decoding="async" data-project-image />
-        <span class="gallery-badge" aria-hidden="true">${project.images.length === 1 ? "Open gallery" : `${project.images.length} images`}</span>
-      </button>
+      <div class="project-image" data-gallery-preview>${cardGallery("project", project, project.image, project.description || project.title)}</div>
       <div class="project-caption">
         <div><p class="eyebrow">${escapeHtml(project.category)} <span class="caption-dot"></span> ${escapeHtml(project.year)}</p><h3>${escapeHtml(project.title)}</h3></div>
         <p>${escapeHtml(project.location)}</p>
@@ -364,10 +377,7 @@ function portfolioPage(): string {
 function planCard(plan: DesignPlan): string {
   const image = plan.images[0] ?? "";
   const imageMarkup = image
-    ? `<button class="gallery-trigger plan-gallery-trigger" type="button" data-gallery-plan="${escapeHtml(plan.id)}" aria-label="Open gallery for ${escapeHtml(plan.title)}${plan.images.length > 1 ? `, ${plan.images.length} images` : ""}" aria-haspopup="dialog">
-        <img src="${escapeHtml(image)}" alt="${escapeHtml(plan.title)} architectural plan preview" loading="lazy" decoding="async" />
-        <span class="gallery-badge" aria-hidden="true">${plan.images.length === 1 ? "Open gallery" : `${plan.images.length} images`}</span>
-      </button>`
+    ? cardGallery("plan", plan, image, `${plan.title} architectural plan preview`)
     : `<span class="plan-image-placeholder" aria-hidden="true">TEQ</span>`;
   const oldPrice = plan.oldPrice && plan.oldPrice > plan.currentPrice
     ? `<del>${formatUsd(plan.oldPrice)}</del>`
@@ -378,7 +388,7 @@ function planCard(plan: DesignPlan): string {
 
   return `
     <article class="plan-card" data-plan-card data-plan-id="${escapeHtml(plan.id)}" data-offer="${plan.offer}">
-      <div class="plan-image">${imageMarkup}<span class="plan-index">${escapeHtml(plan.id.replace("Proj-", ""))}</span>${plan.offer ? '<span class="plan-ribbon">A little extra</span>' : ""}</div>
+      <div class="plan-image" data-gallery-preview>${imageMarkup}<span class="plan-index">${escapeHtml(plan.id.replace("Proj-", ""))}</span>${plan.offer ? '<span class="plan-ribbon">A little extra</span>' : ""}</div>
       <div class="plan-body">
         <div class="plan-title-row"><h2>${escapeHtml(plan.title)}</h2><p class="plan-price">${oldPrice}<strong>${formatUsd(plan.currentPrice)}</strong></p></div>
         <p>${escapeHtml(plan.description)}</p>
