@@ -35,7 +35,15 @@
       "year": "2024",
       "description": "A modern home study focused on structural clarity, clean massing, and livable family spaces.",
       "priceLabel": "",
-      "image": "admin/portfolio-library/IMG-20240806-WA0004.jpg"
+      "image": "admin/portfolio-library/IMG-20240806-WA0004.jpg",
+      "images": [
+        "admin/portfolio-library/IMG-20240806-WA0004.jpg",
+        "admin/portfolio-library/cms-portfolio-2024-08-7e8a595f-696a-411e-962c-8fe7f22877fe.jpg",
+        "admin/portfolio-library/cms-portfolio-2024-08-82277d86-b422-4e7a-9c39-65e0e8b74603.jpg",
+        "admin/portfolio-library/cms-portfolio-2024-08-bd55be37-e218-4e03-8bfc-fcd1803d41d8.jpg",
+        "admin/portfolio-library/cms-portfolio-2024-08-a46fc1b5-1460-4347-9999-fd2ab20e318b.jpg"
+      ],
+      "studioDraftId": "49f1d034-0044-4648-a65b-345aec464497"
     },
     {
       "id": "portfolio-2025-04",
@@ -88,5 +96,5 @@
       "image": "admin/portfolio-library/IMG-20251031-WA0000.jpg"
     }
   ],
-  "updatedAt": "2026-11-25T14:41:04.206Z"
+  "updatedAt": "2026-11-25T15:31:53.843Z"
 }
