@@ -1,3 +1,4 @@
+import deletedListings from "../content/deleted-listings.json";
 import portfolioContent from "../content/portfolio.json";
 import planContent from "../content/buy-plans.json";
 
@@ -81,6 +82,7 @@ function normalizeProject(project: PortfolioRecord): PortfolioProject {
 const portfolioRecords: PortfolioRecord[] = portfolioContent.portfolioProjects;
 const publishedPortfolio = portfolioRecords.map(normalizeProject);
 const publishedProjectIds = new Set(portfolioRecords.flatMap(({ id, previousIds }) => [id, ...(previousIds ?? [])]));
+const deletedProjectIds = new Set<string>(deletedListings.portfolio);
 
 function normalizePlan(plan: DesignPlan): DesignPlan {
   const demoPdf = plan.demoPdf && /^\/assets\/plan-demos\/[a-z0-9_-]+\.pdf$/i.test(plan.demoPdf)
@@ -91,6 +93,7 @@ function normalizePlan(plan: DesignPlan): DesignPlan {
 
 const publishedPlans = planContent.map(normalizePlan);
 const publishedPlanIds = new Set(publishedPlans.map(({ id }) => id));
+const deletedPlanIds = new Set(deletedListings.plans.map((id: string) => id.toLowerCase()));
 
 export function updateContentFromStore(): boolean {
   const store = window.TEQContentStore;
@@ -100,11 +103,11 @@ export function updateContentFromStore(): boolean {
   // Deployments publish these records from Git. Keep local drafts that have no published counterpart.
   portfolioProjects = [
     ...publishedPortfolio,
-    ...data.portfolioProjects.filter(({ id }) => !publishedProjectIds.has(id)).map(normalizeProject)
+    ...data.portfolioProjects.filter(({ id }) => !publishedProjectIds.has(id) && !deletedProjectIds.has(id)).map(normalizeProject)
   ];
   designPlans = [
     ...publishedPlans,
-    ...data.plans.filter(({ id }) => !publishedPlanIds.has(id)).map(normalizePlan)
+    ...data.plans.filter(({ id }) => !publishedPlanIds.has(id) && !deletedPlanIds.has(id.toLowerCase())).map(normalizePlan)
   ];
   return true;
 }
