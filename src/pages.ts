@@ -1,5 +1,6 @@
 import { clientFeedback, designPlans, portfolioProjects, services, team, type DesignPlan, type PortfolioProject } from "./data";
 import { renderCareersSections } from "./careers";
+import { renderNewsSection } from "./news";
 import { escapeHtml, formatUsd } from "./utils";
 import firstHeroImage from "../assets/hero/Mod1.webp?url";
 
@@ -243,6 +244,8 @@ function homePage(): string {
           <div class="project-grid project-grid-home" data-home-projects>${featured}</div>
         </div>
       </section>
+
+      ${renderNewsSection()}
 
       <section class="section section-contact-cta">
         <div class="container contact-cta-layout">

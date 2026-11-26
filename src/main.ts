@@ -3,6 +3,7 @@ import { initInteractions, refreshInteractions } from "./interactions";
 import { refreshPlanListings, refreshProjectListings, renderPage, type PageName } from "./pages";
 import { updateContentFromStore } from "./data";
 import { initCareers } from "./careers";
+import { initNews } from "./news";
 
 const pageNames = new Set<PageName>(["home", "about", "services", "portfolio", "careers", "contact", "plans", "checkout"]);
 const page = document.body.dataset.page as PageName;
@@ -20,6 +21,7 @@ updateContentFromStore();
 app.innerHTML = renderPage(page);
 initInteractions(page);
 if (page === "careers") initCareers();
+if (page === "home") initNews();
 
 window.addEventListener("teq-content-store:change", () => {
   if (!updateContentFromStore()) return;
